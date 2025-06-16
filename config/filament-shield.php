@@ -32,6 +32,11 @@ return [
         'name' => 'panel_user',
     ],
 
+    'customer' => [
+        'enabled' => true,
+        'name' => 'panel_user',
+    ],
+
     'permission_prefixes' => [
         'resource' => [
             'view',

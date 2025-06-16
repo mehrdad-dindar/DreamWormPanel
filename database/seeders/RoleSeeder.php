@@ -20,5 +20,9 @@ class RoleSeeder extends Seeder
         ]);
 
         $role->syncPermissions(Permission::all());
+        Role::create([
+            "name" => "customer",
+            "guard_name" => "web",
+        ]);
     }
 }
