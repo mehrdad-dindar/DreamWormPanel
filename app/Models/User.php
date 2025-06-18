@@ -21,6 +21,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'id_name',
         'phone',
         'email',
         'password',
@@ -59,5 +60,19 @@ class User extends Authenticatable
             ->take(2)
             ->map(fn ($word) => Str::substr($word, 0, 1))
             ->implode('');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($model) {
+            $model->id_name = $model->generateIdName($model->phone, $model->name);
+        });
+    }
+
+    private function generateIdName($phone, $name)
+    {
+        return trim($phone . ' ' . ($name ?? ''));
     }
 }
