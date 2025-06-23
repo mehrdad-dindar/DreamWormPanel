@@ -190,6 +190,17 @@ class OrderResource extends Resource
                 Tables\Columns\TextColumn::make('customer.name')
                     ->description(fn($record) => $record->customer->phone)
                     ->sortable(),
+                Tables\Columns\TextColumn::make('order_items')
+                    ->getStateUsing(fn($record) => $record->getOrderItems())
+                    ->color('info')
+                    ->badge(),
+                Tables\Columns\TextColumn::make('deliver_type')
+                    ->getStateUsing(function ($record){
+                        if ($record->deliver_type) {
+                            return 'تحویل درب کارگاه';
+                        }
+                        return $record->customer->address->address;
+                    }),
                 Tables\Columns\TextColumn::make('user.name')
                     ->label(__('Submitted By'))
                     ->badge()

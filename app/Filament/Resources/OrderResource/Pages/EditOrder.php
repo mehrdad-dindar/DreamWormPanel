@@ -16,4 +16,20 @@ class EditOrder extends EditRecord
             Actions\DeleteAction::make(),
         ];
     }
+
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        $data['address'] = $this->record->customer?->address->address;
+        return $data;
+    }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        $this->record->customer->address()->updateOrCreate(
+            ['user_id' => $this->record->customer->id],
+            ['address' => $data['address']]
+        );
+        unset($data['address']);
+        return $data;
+    }
 }

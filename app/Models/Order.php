@@ -23,4 +23,13 @@ class Order extends Model
     {
         return $this->hasMany(OrderItem::class);
     }
+
+    public function getOrderItems()
+    {
+        $items = [];
+        foreach ($this->items as $item) {
+            array_push($items, $item->quantity. ' کیلو ' .$item->product->name);
+        }
+        return $items;
+    }
 }

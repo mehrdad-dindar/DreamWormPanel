@@ -15,8 +15,10 @@ class CreateOrder extends CreateRecord
     {
         $data['user_id'] = auth()->id();
         $customer = User::find($data['customer_id']);
-//        dd($data);
-        $customer->address()->updateOrCreate(['address' => $data['address']]);
+        $customer->address()->updateOrCreate(
+            ['user_id' => $customer->id],
+            ['address' => $data['address']]
+        );
         unset($data['address']);
         return $data;
     }
