@@ -106,7 +106,6 @@ class OrderResource extends Resource
                                                 ->reactive()
                                                 ->live()
                                                 ->readOnly(fn(Get $get) => !$get('custom_price'))
-//                                                ->disabled()
                                                 ->mutateStateForValidationUsing(fn ($state) => str_replace(',', '', $state))
                                                 ->mutateDehydratedStateUsing(fn ($state) => str_replace(',', '', $state))
                                                 ->mask(RawJs::make('$money($input)'))
@@ -156,15 +155,28 @@ class OrderResource extends Resource
                                         })
                                         ->createOptionAction(fn ($action) => $action->modalWidth('sm'))
                                         ->required(),
+                                    Forms\Components\Checkbox::make('deliver_type')
+                                        ->live()
+                                        ->default(true)
+                                        ->reactive()
+                                        ->dehydrated(),
+                                    Forms\Components\TextInput::make('address')
+                                        ->dehydrated()
+                                        ->hidden(fn(Get  $get) => $get('deliver_type')),
                                 ]),
+                            Forms\Components\Hidden::make('price'),
                             Forms\Components\Section::make('صورت حساب')
                                 ->icon('heroicon-o-currency-dollar')
                                 ->schema([
-                                    Forms\Components\Placeholder::make('price')
+                                    Forms\Components\Placeholder::make('invoice')
                                         ->hint('Total Price')
                                         ->live()
                                         ->reactive()
-                                        ->content(fn(Get $get) => self::getTotalPrice($get)),
+                                        ->content(function (Get $get, Set $set) {
+                                            $result = self::getInvoice($get);
+                                            $set('price', $result['total']);
+                                            return $result['html'];
+                                        }),
                                 ])
                         ]),
                 ]),
@@ -235,11 +247,13 @@ class OrderResource extends Resource
         ];
     }
 
-    private static function getTotalPrice(Get $get)
+    private static function getInvoice(Get $get): array
     {
 //        dd($get("items"));
         if (!count($get("items"))) {
-            return "موارد سفارش خالی هست !";
+            return [
+                'total' => 0,
+                'html' => "موارد سفارش خالی هست !"];
         }
         $html = "";
         $total = 0;
@@ -257,11 +271,23 @@ class OrderResource extends Resource
             $html .= "</div>";
         }
 
+        if (!$get('deliver_type')){
+            $delivery = 70000;
+            $total += $delivery;
+            $html .= "<div class='flex justify-between items-center pt-1'>";
+            $html .= "<strong>حمل و نقل</strong>";
+            $html .= "<strong>".number_format($delivery)."</strong>";
+            $html .= "</div>";
+        }
+
         $html .= "<div class='flex justify-between items-center pt-2'>";
         $html .= "<strong>جمع کل</strong>";
         $html .= "<strong>".number_format($total)." تومان</strong>";
         $html .= "</div>";
 
-        return new HtmlString($html);
+        return [
+            'total' => $total,
+            'html' => new HtmlString($html)
+        ];
     }
 }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
@@ -74,5 +75,10 @@ class User extends Authenticatable
     private function generateIdName($phone, $name)
     {
         return trim($phone . ' ' . ($name ?? ''));
+    }
+
+    public function address(): HasOne
+    {
+        return $this->HasOne(Address::class);
     }
 }
