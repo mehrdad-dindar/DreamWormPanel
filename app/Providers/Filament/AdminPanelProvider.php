@@ -19,6 +19,9 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use lockscreen\FilamentLockscreen\Http\Middleware\Locker;
+use lockscreen\FilamentLockscreen\Http\Middleware\LockerTimer;
+use lockscreen\FilamentLockscreen\Lockscreen;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -44,7 +47,8 @@ class AdminPanelProvider extends PanelProvider
 //                Widgets\FilamentInfoWidget::class,
             ])
             ->plugins([
-                FilamentShieldPlugin::make()
+                FilamentShieldPlugin::make(),
+                Lockscreen::make()
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -56,9 +60,11 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                LockerTimer::class
             ])
             ->authMiddleware([
                 Authenticate::class,
+                Locker::class
             ]);
     }
 }
