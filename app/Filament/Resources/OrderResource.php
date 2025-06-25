@@ -186,6 +186,7 @@ class OrderResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('customer.name')
                     ->description(fn($record) => $record->customer->phone)
@@ -194,6 +195,10 @@ class OrderResource extends Resource
                     ->getStateUsing(fn($record) => $record->getOrderItems())
                     ->color('info')
                     ->badge(),
+                Tables\Columns\TextColumn::make('price')
+                    ->suffix(' تومان')
+                    ->numeric(locale: 'en')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('deliver_type')
                     ->getStateUsing(function ($record){
                         if ($record->deliver_type) {
@@ -207,6 +212,7 @@ class OrderResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
+                    ->formatStateUsing(fn($state) => __('status.' . $state))
                     ->color(function ($record){
                         return match ($record->status){
                             'pending' => 'warning',
@@ -215,10 +221,6 @@ class OrderResource extends Resource
                             default => 'danger'
                         };
                     })
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('price')
-                    ->suffix(' تومان')
-                    ->numeric(locale: 'en')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -234,6 +236,22 @@ class OrderResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('changeStatus')
+                    ->icon('heroicon-o-check')
+                    ->form([
+                        Forms\Components\Select::make('status')
+                            ->native(false)
+                            ->options([
+                                'pending' => __('status.pending'),
+                                'processing' => __('status.processing'),
+                                'completed' => __('status.completed'),
+                                'cancelled' => __('status.cancelled')
+                            ]),
+                    ])
+                    ->modalWidth('sm')
+                    ->action(function (array $data,Order $record) {
+                        $record->update($data);
+                    })
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
