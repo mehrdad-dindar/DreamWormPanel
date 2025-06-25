@@ -19,7 +19,7 @@ class EditOrder extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        $data['address'] = $this->record->customer?->address->address;
+        $data['address'] = $this->record->customer?->address->address ?? null;
         return $data;
     }
 
@@ -31,5 +31,10 @@ class EditOrder extends EditRecord
         );
         unset($data['address']);
         return $data;
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
     }
 }
