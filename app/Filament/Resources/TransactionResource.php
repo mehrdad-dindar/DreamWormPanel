@@ -4,6 +4,8 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\TransactionResource\Pages;
 use App\Filament\Resources\TransactionResource\RelationManagers;
+use App\Filament\Widgets\MonthlyExpenseChart;
+use App\Filament\Widgets\MonthlyIncomeChart;
 use App\Models\Transaction;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -26,13 +28,6 @@ class TransactionResource extends Resource
             ->schema([
                 Forms\Components\Hidden::make('user_id')
                     ->default(auth()->id()),
-                Forms\Components\Select::make('type')
-                    ->options([
-                        0 => __('expense'),
-                        1 => __('income'),
-                    ])
-                    ->native(false)
-                    ->required(),
                 Forms\Components\TextInput::make('amount')
                     ->mask(RawJs::make('$money($input)'))
                     ->suffix('تومان')
@@ -40,6 +35,10 @@ class TransactionResource extends Resource
                     ->mutateDehydratedStateUsing(fn ($state) => str_replace(',', '', $state))
                     ->numeric()
                     ->required(),
+                Forms\Components\ToggleButtons::make('type')
+                    ->inline()
+                    ->default(0)
+                    ->boolean(__('income'),__('expense')),
                 Forms\Components\TextInput::make('category')
                     ->maxLength(255),
                 Forms\Components\Textarea::make('description')
@@ -57,6 +56,7 @@ class TransactionResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('type')
                     ->formatStateUsing(fn($state) => match ((int)$state) {0 => __('expense'), 1 => __('income')})
+                    ->color(fn($record) => $record->type ? 'success' : 'danger')
                     ->badge(),
                 Tables\Columns\TextColumn::make('amount')
                     ->numeric(locale: 'en')
@@ -100,6 +100,14 @@ class TransactionResource extends Resource
             'index' => Pages\ListTransactions::route('/'),
             'create' => Pages\CreateTransaction::route('/create'),
             'edit' => Pages\EditTransaction::route('/{record}/edit'),
+        ];
+    }
+
+    public static function getWidgets(): array
+    {
+        return [
+            MonthlyIncomeChart::class,
+            MonthlyExpenseChart::class
         ];
     }
 }

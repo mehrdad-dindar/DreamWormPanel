@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->enum('type',[0,1])->comment('1 = income , 0 = expense');
+            $table->boolean('type')->comment('1 = income , 0 = expense');
             $table->integer('amount');
             $table->string('category')->nullable();
             $table->text('description')->nullable();
