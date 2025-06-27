@@ -63,7 +63,10 @@ class WorkSessionResource extends Resource
                         $hour = intval($duration / 60);
                         $minutes = $duration % 60;
                         if ($hour) {
-                            return $hour . ' ساعت و ' . $minutes . ' دقیقه';
+                            if ($minutes) {
+                                return $hour . ' ساعت و ' . $minutes . ' دقیقه';
+                            }
+                            return $hour . ' ساعت';
                         } else {
                             return $minutes . ' دقیقه';
                         }
