@@ -3,11 +3,11 @@
 namespace App\Filament\Resources\TransactionResource\Pages;
 
 use App\Filament\Resources\TransactionResource;
-use App\Filament\Widgets\MonthlyExpenseChart;
-use App\Filament\Widgets\MonthlyIncomeChart;
+use App\Filament\Resources\TransactionResource\Widgets\MonthlyExpenseChart;
+use App\Filament\Resources\TransactionResource\Widgets\MonthlyIncomeChart;
 use Filament\Actions;
-use Filament\Resources\Pages\ListRecords;
 use Filament\Resources\Components\Tab;
+use Filament\Resources\Pages\ListRecords;
 
 class ListTransactions extends ListRecords
 {

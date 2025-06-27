@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Filament\Widgets;
+namespace App\Filament\Resources\TransactionResource\Widgets;
 
 use App\Models\Transaction;
 use Exception;
 use Filament\Widgets\ChartWidget;
 
-class MonthlyIncomeChart extends ChartWidget
+class MonthlyExpenseChart extends ChartWidget
 {
-    protected static ?string $heading = 'نمودار درآمد ماه جاری';
-    protected static string $color = 'success';
+    protected static ?string $heading = 'نمودار هزینه ماه جاری';
+    protected static string $color = 'danger';
     protected static ?string $description = null;
 
     /**
@@ -18,11 +18,11 @@ class MonthlyIncomeChart extends ChartWidget
     public function boot(): void
     {
         $total = Transaction::query()
-            ->where('type', true)
+            ->where('type', false)
             ->where('created_at', '>=', verta()->startMonth()->toCarbon())
             ->selectRaw('SUM(amount) as total')
             ->pluck('total')->first();
-        self::$description = 'مجموع درآمد ناخالص ' .verta()->format('F'). ' ماه : '.number_format($total).' تومان';
+        self::$description = 'مجموع هزینه ناخالص ' .verta()->format('F'). ' ماه : '.number_format($total).' تومان';
     }
 
     /**
@@ -31,7 +31,7 @@ class MonthlyIncomeChart extends ChartWidget
     protected function getData(): array
     {
         $data = Transaction::query()
-            ->where('type', true)
+            ->where('type', false)
             ->where('created_at', '>=', verta()->startMonth()->toCarbon())
             ->selectRaw('DATE(created_at) as day, SUM(amount) as total')
             ->groupBy('day')
@@ -58,7 +58,7 @@ class MonthlyIncomeChart extends ChartWidget
             'labels' => $labels,
             'datasets' => [
                 [
-                    'label' => 'دریافتی',
+                    'label' => 'هزینه',
                     'data' => array_values($days),
                 ],
             ],

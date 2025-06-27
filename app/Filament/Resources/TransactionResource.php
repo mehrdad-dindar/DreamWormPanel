@@ -4,8 +4,8 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\TransactionResource\Pages;
 use App\Filament\Resources\TransactionResource\RelationManagers;
-use App\Filament\Widgets\MonthlyExpenseChart;
-use App\Filament\Widgets\MonthlyIncomeChart;
+use App\Filament\Resources\TransactionResource\Widgets\MonthlyExpenseChart;
+use App\Filament\Resources\TransactionResource\Widgets\MonthlyIncomeChart;
 use App\Models\Transaction;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -13,8 +13,6 @@ use Filament\Resources\Resource;
 use Filament\Support\RawJs;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class TransactionResource extends Resource
 {
