@@ -17,8 +17,13 @@ class WorkSessionResource extends Resource
 {
     protected static ?string $model = WorkSession::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-clock';
+    protected static ?string $activeNavigationIcon = 'heroicon-s-clock';
+    protected static ?string $navigationLabel = 'جلسات کاری';
+    protected static ?string $breadcrumb = 'جلسات کاری';
+    protected static ?string $pluralModelLabel = 'جلسات کاری';
 
+    protected static ?string $modelLabel = 'جلسه';
     public static function form(Form $form): Form
     {
         return $form
@@ -26,21 +31,29 @@ class WorkSessionResource extends Resource
                 Forms\Components\Hidden::make('user_id')
                     ->default(auth()->id()),
                 Forms\Components\DatePicker::make('date')
+                    ->translateLabel()
+                    ->required()
                     ->jalali()
                     ->closeOnDateSelection()
                     ->default(now()),
-                Forms\Components\TimePicker::make('start_time')
-                    ->jalali()
-                    ->seconds(false)
-                    ->default(now())
-                    ->minutesStep(5)
-                    ->required(),
-                Forms\Components\TimePicker::make('end_time')
-                    ->jalali()
-                    ->seconds(false)
-                    ->minutesStep(5)
-                    ->required(),
+                Forms\Components\Fieldset::make()
+                    ->schema([
+                        Forms\Components\TimePicker::make('start_time')
+                            ->translateLabel()
+                            ->jalali()
+                            ->seconds(false)
+                            ->default(now())
+                            ->minutesStep(5)
+                            ->required(),
+                        Forms\Components\TimePicker::make('end_time')
+                            ->translateLabel()
+                            ->jalali()
+                            ->seconds(false)
+                            ->minutesStep(5)
+                            ->required(),
+                    ]),
                 Forms\Components\Textarea::make('description')
+                    ->translateLabel()
                     ->columnSpanFull(),
             ]);
     }
@@ -50,14 +63,18 @@ class WorkSessionResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('user.name')
+                    ->translateLabel()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('start_time')
+                    ->translateLabel()
                     ->jalaliDateTime('d F Y - H:i')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('end_time')
+                    ->translateLabel()
                     ->jalaliDateTime('d F Y - H:i')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('work_time')
+                    ->translateLabel()
                     ->state(function($record) {
                         $duration = verta($record->end_time)->diffMinutes($record->start_time);
                         $hour = intval($duration / 60);
@@ -72,11 +89,13 @@ class WorkSessionResource extends Resource
                         }
                     }),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
+                    ->translateLabel()
+                    ->jalaliDateTime('d F Y - H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->translateLabel()
+                    ->jalaliDateTime('d F Y - H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
