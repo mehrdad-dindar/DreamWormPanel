@@ -25,7 +25,9 @@ class OrderResource extends Resource
 {
     protected static ?string $model = Order::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-shopping-cart';
+    protected static ?string $activeNavigationIcon = 'heroicon-s-shopping-cart';
+    protected static ?string $navigationLabel = 'سفارشات';
 
     public static function form(Form $form): Form
     {
@@ -318,5 +320,13 @@ class OrderResource extends Resource
             'total' => $total,
             'html' => new HtmlString($html)
         ];
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        $pending = Order::whereStatus('pending')->pluck('id');
+        if ($pending->count())
+            return $pending->count();
+        return null;
     }
 }
