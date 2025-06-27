@@ -20,6 +20,8 @@ use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\HtmlString;
+use Illuminate\Validation\Rule;
+use MongoDB\BSON\Regex;
 
 class OrderResource extends Resource
 {
@@ -28,6 +30,10 @@ class OrderResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-shopping-cart';
     protected static ?string $activeNavigationIcon = 'heroicon-s-shopping-cart';
     protected static ?string $navigationLabel = 'سفارشات';
+    protected static ?string $breadcrumb = 'سفارشات';
+    protected static ?string $pluralModelLabel = 'سفارشات';
+
+    protected static ?string $modelLabel = 'سفارش';
 
     public static function form(Form $form): Form
     {
@@ -49,6 +55,7 @@ class OrderResource extends Resource
                                     Forms\Components\Grid::make()
                                         ->schema([
                                             Forms\Components\Select::make('product_id')
+                                                ->translateLabel()
                                                 ->reactive()
                                                 ->live()
                                                 ->native(false)
@@ -64,18 +71,20 @@ class OrderResource extends Resource
                                                 })
                                                 ->relationship('product', 'name'),
                                             Forms\Components\TextInput::make('quantity')
+                                                ->translateLabel()
                                                 ->hidden(fn(Get $get) => is_null($get('product_id')))
                                                 ->numeric()
                                                 ->default(1)
-                                                ->step(0.5)
+                                                ->step(0.05)
                                                 ->reactive()
+                                                ->suffix('کیلوگرم')
                                                 ->afterStateUpdated(function ($state, Set $set, Get $get) {
                                                     if (is_null($state)) {
                                                         return null;
                                                     }
                                                     if (!$get('custom_price')){
                                                         $product = Product::findOrFail($get('product_id'));
-                                                        $set('price', $product->price * floatval($get('quantity')??1));
+                                                        $set('price', round($product->price * floatval($get('quantity')??1)));
                                                     }
                                                 })
                                                 ->label(__('Quantity')),
@@ -125,8 +134,7 @@ class OrderResource extends Resource
                                 ->icon('heroicon-o-user')
                                 ->schema([
                                     Forms\Components\Select::make('customer_id')
-                                        ->translateLabel()
-                                        ->label('customer')
+                                        ->label(__('Customer'))
                                         ->prefixIcon('heroicon-o-user')
                                         ->options(function () {
                                             return User::role('customer')->pluck('id_name', 'id');
@@ -145,7 +153,14 @@ class OrderResource extends Resource
                                                     Forms\Components\TextInput::make('phone')
                                                         ->label(__('Customer Phone'))
                                                         ->prefixIcon('heroicon-o-phone')
-                                                        ->unique()
+                                                        ->live()
+                                                        ->reactive()
+                                                        ->unique(ignoreRecord: true)
+                                                        ->rules([
+                                                            'regex:/^0[1-9][0-9]\d{8}$/',
+                                                        ])
+                                                        ->helperText('فرمت مجاز: 0912xxxxxxx یا 021xxxxxxx')
+                                                        ->tel()
                                                         ->required(),
                                                 ])
                                                 ->columns(1),
@@ -157,21 +172,31 @@ class OrderResource extends Resource
                                         })
                                         ->createOptionAction(fn ($action) => $action->modalWidth('sm'))
                                         ->required(),
-                                    Forms\Components\Checkbox::make('deliver_type')
-                                        ->live()
-                                        ->default(true)
-                                        ->reactive()
-                                        ->dehydrated(),
-                                    Forms\Components\TextInput::make('address')
-                                        ->dehydrated()
-                                        ->hidden(fn(Get  $get) => $get('deliver_type')),
+                                    Forms\Components\Fieldset::make('Deliver type')
+                                        ->translateLabel()
+                                        ->schema([
+                                            Forms\Components\Toggle::make('deliver_type')
+                                                ->label(__('Workshop door'))
+                                                ->live()
+                                                ->default(true)
+                                                ->reactive()
+                                                ->dehydrated(),
+                                            Forms\Components\TextInput::make('address')
+                                                ->required(fn(Get $get) => !$get('deliver_type'))
+                                                ->live()
+                                                ->translateLabel()
+                                                ->columnSpanFull()
+                                                ->dehydrated()
+                                                ->hidden(fn(Get  $get) => $get('deliver_type')),
+                                        ])
                                 ]),
                             Forms\Components\Hidden::make('price'),
                             Forms\Components\Section::make('صورت حساب')
                                 ->icon('heroicon-o-currency-dollar')
                                 ->schema([
                                     Forms\Components\Placeholder::make('invoice')
-                                        ->hint('Total Price')
+                                        ->translateLabel()
+                                        ->hint(__('Total Price'))
                                         ->live()
                                         ->reactive()
                                         ->content(function (Get $get, Set $set) {
@@ -191,17 +216,21 @@ class OrderResource extends Resource
             ->defaultSort('created_at', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('customer.name')
+                    ->translateLabel()
                     ->description(fn($record) => $record->customer->phone)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('order_items')
+                    ->translateLabel()
                     ->getStateUsing(fn($record) => $record->getOrderItems())
                     ->color('info')
                     ->badge(),
                 Tables\Columns\TextColumn::make('price')
+                    ->translateLabel()
                     ->suffix(' تومان')
                     ->numeric(locale: 'en')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('deliver_type')
+                    ->translateLabel()
                     ->getStateUsing(function ($record){
                         if ($record->deliver_type) {
                             return 'تحویل درب کارگاه';
@@ -213,6 +242,28 @@ class OrderResource extends Resource
                     ->badge()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status')
+                    ->translateLabel()
+                    ->action(
+                        Tables\Actions\Action::make('changeStatus')
+                            ->translateLabel()
+                            ->color('info')
+                            ->icon('heroicon-o-check')
+                            ->form([
+                                Forms\Components\Select::make('status')
+                                    ->translateLabel()
+                                    ->native(false)
+                                    ->options([
+                                        'pending' => __('status.pending'),
+                                        'processing' => __('status.processing'),
+                                        'completed' => __('status.completed'),
+                                        'cancelled' => __('status.cancelled')
+                                    ]),
+                            ])
+                            ->modalWidth('sm')
+                            ->action(function (array $data,Order $record) {
+                                $record->update($data);
+                            })
+                    )
                     ->badge()
                     ->formatStateUsing(fn($state) => __('status.' . $state))
                     ->color(function ($record){
@@ -225,11 +276,13 @@ class OrderResource extends Resource
                     })
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
+                    ->translateLabel()
+                    ->jalaliDateTime('d F Y - H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->translateLabel()
+                    ->jalaliDateTime('d F Y - H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
@@ -237,23 +290,13 @@ class OrderResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\Action::make('Call')
+                    ->button()
+                    ->color('success')
+                    ->icon('heroicon-s-phone')
+                    ->url(fn($record) => 'tel:+98'.intval($record->customer->phone))
+                    ->translateLabel(),
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\Action::make('changeStatus')
-                    ->icon('heroicon-o-check')
-                    ->form([
-                        Forms\Components\Select::make('status')
-                            ->native(false)
-                            ->options([
-                                'pending' => __('status.pending'),
-                                'processing' => __('status.processing'),
-                                'completed' => __('status.completed'),
-                                'cancelled' => __('status.cancelled')
-                            ]),
-                    ])
-                    ->modalWidth('sm')
-                    ->action(function (array $data,Order $record) {
-                        $record->update($data);
-                    })
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -280,7 +323,6 @@ class OrderResource extends Resource
 
     private static function getInvoice(Get $get): array
     {
-//        dd($get("items"));
         if (!count($get("items"))) {
             return [
                 'total' => 0,
@@ -297,7 +339,11 @@ class OrderResource extends Resource
             $total += intval($price);
             $html .= "<div class='flex justify-between items-center'>";
             $product = Product::findOrFail($item["product_id"]);
-            $html .= "<span>".$product->name."(".$item['quantity']." کیلو)</span>";
+            if ($item['quantity'] < 1) {
+                $html .= "<span>" . $product->name . " (" . $item['quantity'] * 1000 . " گرم)</span>";
+            }else {
+                $html .= "<span>" . $product->name . " (" . $item['quantity'] . " کیلوگرم)</span>";
+            }
             $html .= "<span>".number_format($price)."</span>";
             $html .= "</div>";
         }

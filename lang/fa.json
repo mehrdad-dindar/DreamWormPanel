@@ -1,0 +1,22 @@
+{
+    "Customer" : "مشتری",
+    "Customer Name" : "نام مشتری",
+    "Customer Phone" : "شماره مشتری",
+    "Order items" : "موارد سفارش",
+    "Price" : "مبلغ",
+    "Deliver type" : "نوع تحویل",
+    "Workshop door" : "درب کارگاه",
+    "Address" : "آدرس",
+    "Call" : "تماس",
+    "Invoice" : "صورتحساب",
+    "Total Price" : "قیمت کل",
+    "Status" : "وضعیت",
+    "Change status" : "تغییر وضعیت",
+    "Created at" : "تاریخ ایجاد",
+    "Updated at" : "تاریخ تغییر",
+    "Items" : "موارد",
+    "Product" : "محصول",
+    "Quantity" : "مقدار",
+    "Unit Price" : "مبلغ ردیف",
+    "Submitted By" : "ثبت کننده"
+}

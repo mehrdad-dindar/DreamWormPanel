@@ -25,11 +25,13 @@ class EditOrder extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
-        $this->record->customer->address()->updateOrCreate(
-            ['user_id' => $this->record->customer->id],
-            ['address' => $data['address']]
-        );
-        unset($data['address']);
+        if (isset($data['address'])) {
+            $this->record->customer->address()->updateOrCreate(
+                ['user_id' => $this->record->customer->id],
+                ['address' => $data['address']]
+            );
+            unset($data['address']);
+        }
         return $data;
     }
 
