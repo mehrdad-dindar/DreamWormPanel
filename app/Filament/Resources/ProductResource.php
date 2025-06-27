@@ -17,16 +17,24 @@ class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-swatch';
+    protected static ?string $activeNavigationIcon = 'heroicon-s-swatch';
+    protected static ?string $navigationLabel = 'محصولات';
+    protected static ?string $breadcrumb = 'محصولات';
+    protected static ?string $pluralModelLabel = 'محصولات';
+
+    protected static ?string $modelLabel = 'محصول';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
+                    ->translateLabel()
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('price')
+                    ->translateLabel()
                     ->required()
                     ->numeric()
                     ->suffix('تومان برای هر کیلو')
@@ -38,17 +46,21 @@ class ProductResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->translateLabel()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('price')
+                    ->translateLabel()
                     ->suffix(' تومان')
                     ->numeric(locale: 'en')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
+                    ->translateLabel()
+                    ->jalaliDateTime('d F Y - H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->translateLabel()
+                    ->jalaliDateTime('d F Y - H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
