@@ -3,25 +3,36 @@
 namespace App\Traits;
 
 use App\Models\User;
-use Ippanel\Client;
+use Exception;
+use GuzzleHttp\Exception\GuzzleException;
+use Ippanel\Facades\IPPanel;
+use Ippanel\Responses\SendResponse;
 
 trait Sms
 {
-    public function sendPattern(Client $ippanel, $pattern,User $user, $params)
+    const ORDER_SUBMITTED = 'plbga45ztzj0t3l';
+    /**
+     * ارسال پیامک با پترن
+     *
+     * @param string $patternCode
+     * @param string|array $recipients
+     * @param array $patternValues
+     * @return SendResponse bulkID یا استثناء
+     * @throws GuzzleException
+     */
+    public function sendPattern(string $patternCode, $recipient, array $patternValues)
     {
-        $response = $ippanel->sendPattern(
-            $pattern,  // Your pattern code
-            '+981000xxxx',   // Sender number
-            '+98'.intval($user->phone), // Recipient
-            $params // Pattern parameters
-        );
-
-        if ($response->isSuccessful()) {
-            // Pattern message sent successfully
-            $data = $response->getData();
-            // Process data...
-        } else {
-            // Handle error
+        try {
+            $bulkID = IPPanel::sendPattern(
+                $patternCode,
+                "+983000505",
+                $recipient,
+                $patternValues
+            );
+            return $bulkID;
+        } catch (Exception $e) {
+            // مدیریت خطا
+            throw $e;
         }
     }
 
