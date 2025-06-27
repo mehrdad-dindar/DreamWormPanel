@@ -11,6 +11,7 @@ use Ippanel\Responses\SendResponse;
 trait Sms
 {
     const ORDER_SUBMITTED = 'plbga45ztzj0t3l';
+    const FOLLOW_UP = 'hsbmg1dsak5og6l';
     /**
      * ارسال پیامک با پترن
      *
@@ -20,13 +21,13 @@ trait Sms
      * @return SendResponse bulkID یا استثناء
      * @throws GuzzleException
      */
-    public function sendPattern(string $patternCode, $recipient, array $patternValues)
+    public function sendPattern(string $patternCode, $phone, array $patternValues)
     {
         try {
             $bulkID = IPPanel::sendPattern(
                 $patternCode,
                 "+983000505",
-                $recipient,
+                '+98'.intval($phone),
                 $patternValues
             );
             return $bulkID;
