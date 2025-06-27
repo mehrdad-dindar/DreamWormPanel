@@ -87,4 +87,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Transaction::class);
     }
+
+    public function workSession(): HasMany
+    {
+        return $this->hasMany(WorkSession::class);
+    }
 }
