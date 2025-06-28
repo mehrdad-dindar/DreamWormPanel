@@ -4,14 +4,17 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -20,6 +23,8 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'id_name',
+        'phone',
         'email',
         'password',
     ];
@@ -57,5 +62,34 @@ class User extends Authenticatable
             ->take(2)
             ->map(fn ($word) => Str::substr($word, 0, 1))
             ->implode('');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($model) {
+            $model->id_name = $model->generateIdName($model->phone, $model->name);
+        });
+    }
+
+    private function generateIdName($phone, $name)
+    {
+        return trim($phone . ' ' . ($name ?? ''));
+    }
+
+    public function address(): HasOne
+    {
+        return $this->HasOne(Address::class);
+    }
+
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
+    public function workSession(): HasMany
+    {
+        return $this->hasMany(WorkSession::class);
     }
 }
