@@ -24,17 +24,16 @@ class CreateOrder extends CreateRecord
             );
             unset($data['address']);
         }
+        if ($data['send_sms']) {
+            event(new OrderCreated($this->record));
+        }
+
+        unset($data['send_sms']);
         return $data;
     }
 
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index');
-    }
-
-    #[NoReturn]
-    protected function afterCreate(): void
-    {
-        event(new OrderCreated($this->record));
     }
 }
