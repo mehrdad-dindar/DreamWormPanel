@@ -40,16 +40,12 @@ class WorkSessionResource extends Resource
                     ->schema([
                         Forms\Components\TimePicker::make('start_time')
                             ->translateLabel()
-                            ->jalali()
                             ->seconds(false)
-                            ->default(now())
-                            ->minutesStep(5)
+                            ->default(now()->format("H:i"))
                             ->required(),
                         Forms\Components\TimePicker::make('end_time')
                             ->translateLabel()
-                            ->jalali()
                             ->seconds(false)
-                            ->minutesStep(5)
                             ->required(),
                     ]),
                 Forms\Components\Textarea::make('description')
