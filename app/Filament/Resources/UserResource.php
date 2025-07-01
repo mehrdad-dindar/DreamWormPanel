@@ -5,6 +5,8 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
+use App\Policies\UserPolicy;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
@@ -15,7 +17,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class UserResource extends Resource
+class UserResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = User::class;
 
@@ -26,6 +28,7 @@ class UserResource extends Resource
     protected static ?string $pluralModelLabel = 'کاربران';
 
     protected static ?string $modelLabel = 'کاربر';
+
     public static function form(Form $form): Form
     {
         return $form
@@ -80,11 +83,12 @@ class UserResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('roles.name')
                     ->translateLabel()
-                    ->formatStateUsing(fn($state) => __('role.'.$state))
+                    ->formatStateUsing(fn($state) => __('role.' . $state))
                     ->badge()
                     ->color(fn($state) => match ($state) {
                         'super_admin' => Color::Fuchsia,
                         'customer' => Color::Lime,
+                        default => Color::Amber
                     })
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email_verified_at')
@@ -107,10 +111,12 @@ class UserResource extends Resource
             ])
             ->actions([
                 Tables\Actions\Action::make('Call')
+                    ->visible(fn() => UserPolicy::class)
+                    ->authorize('call')
                     ->button()
                     ->color('success')
                     ->icon('heroicon-s-phone')
-                    ->url(fn($record) => 'tel:+98'.intval($record->phone))
+                    ->url(fn($record) => 'tel:+98' . intval($record->phone))
                     ->translateLabel(),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
@@ -136,6 +142,25 @@ class UserResource extends Resource
             'create' => Pages\CreateUser::route('/create'),
             'view' => Pages\ViewUser::route('/{record}'),
             'edit' => Pages\EditUser::route('/{record}/edit'),
+        ];
+    }
+
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view',
+            'view_any',
+            'create',
+            'update',
+            'delete',
+            'delete_any',
+            'force_delete',
+            'force_delete_any',
+            'restore',
+            'replicate',
+            'reorder',
+            'restore_any',
+            'call'
         ];
     }
 }

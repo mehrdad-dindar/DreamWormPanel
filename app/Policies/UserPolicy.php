@@ -141,4 +141,15 @@ class UserPolicy
     {
         return $user->can('reorder_user');
     }
+
+    /**
+     * Determine whether the user can publish posts.
+     *
+     * @param User $user
+     * @return bool
+     */
+    public function call(User $user): bool
+    {
+        return $user->can('call_user');
+    }
 }

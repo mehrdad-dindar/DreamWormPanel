@@ -76,5 +76,6 @@ return [
         'replicate' => 'تکثیر',
         'reorder' => 'مرتب‌سازی',
         'restore_any' => 'بازیابی همه',
+        'call' => 'تماس',
     ],
 ];
