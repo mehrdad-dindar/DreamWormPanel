@@ -16,12 +16,8 @@ use Filament\Resources\Resource;
 use Filament\Support\RawJs;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\HtmlString;
-use Illuminate\Validation\Rule;
-use MongoDB\BSON\Regex;
 
 class OrderResource extends Resource
 {
@@ -194,6 +190,8 @@ class OrderResource extends Resource
                             Forms\Components\Section::make('صورت حساب')
                                 ->icon('heroicon-o-currency-dollar')
                                 ->schema([
+                                    Forms\Components\Toggle::make('send_sms')
+                                        ->label(__('Send Invoice SMS')),
                                     Forms\Components\Placeholder::make('invoice')
                                         ->translateLabel()
                                         ->hint(__('Total Price'))
@@ -265,15 +263,19 @@ class OrderResource extends Resource
                             })
                     )
                     ->badge()
+                    ->icon(fn($state) => "heroicon-o-". match ($state) {
+                        'pending' => 'clock',
+                        'processing' => 'arrow-path',
+                        'completed' => 'check-circle',
+                        default => 'x-circle'
+                    })
                     ->formatStateUsing(fn($state) => __('status.' . $state))
-                    ->color(function ($record){
-                        return match ($record->status){
+                    ->color(fn($state) => match ($state){
                             'pending' => 'warning',
                             'processing' => 'info',
                             'completed' => 'success',
                             default => 'danger'
-                        };
-                    })
+                        })
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->translateLabel()
@@ -332,7 +334,7 @@ class OrderResource extends Resource
         $total = 0;
 
         foreach ($get("items") as $item) {
-            if (is_null($item["product_id"])){
+            if (is_null($item["product_id"]) || empty($item["quantity"])){
                 continue;
             }
             $price = str_replace(',', '', $item['price']);

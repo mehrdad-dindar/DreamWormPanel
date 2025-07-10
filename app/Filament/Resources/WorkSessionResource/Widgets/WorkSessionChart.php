@@ -18,7 +18,9 @@ class WorkSessionChart extends ChartWidget
 
         $data = WorkSession::where('user_id', $userId)
             ->whereMonth('start_time', verta()->startMonth()->toCarbon())
+            ->orWhereMonth('start_time', verta()->endMonth()->toCarbon())
             ->whereYear('start_time', verta()->startYear()->toCarbon())
+            ->orWhereYear('start_time', verta()->endYear()->toCarbon())
             ->whereNotNull('end_time')
             ->get()
             ->groupBy(function ($session) {

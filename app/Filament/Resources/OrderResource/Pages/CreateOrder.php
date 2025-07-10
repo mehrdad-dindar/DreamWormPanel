@@ -12,6 +12,7 @@ use JetBrains\PhpStorm\NoReturn;
 class CreateOrder extends CreateRecord
 {
     protected static string $resource = OrderResource::class;
+    public bool $sms = false;
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
@@ -24,17 +25,22 @@ class CreateOrder extends CreateRecord
             );
             unset($data['address']);
         }
+        if ($data['send_sms']) {
+            $this->sms = true;
+        }
+
+        unset($data['send_sms']);
         return $data;
     }
 
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('index');
-    }
-
-    #[NoReturn]
     protected function afterCreate(): void
     {
-        event(new OrderCreated($this->record));
+        if ($this->sms)
+            event(new OrderCreated($this->record));
     }
+
+//    protected function getRedirectUrl(): string
+//    {
+//        return $this->getResource()::getUrl('index');
+//    }
 }
