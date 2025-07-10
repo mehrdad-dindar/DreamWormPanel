@@ -16,12 +16,8 @@ use Filament\Resources\Resource;
 use Filament\Support\RawJs;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\HtmlString;
-use Illuminate\Validation\Rule;
-use MongoDB\BSON\Regex;
 
 class OrderResource extends Resource
 {
@@ -338,7 +334,7 @@ class OrderResource extends Resource
         $total = 0;
 
         foreach ($get("items") as $item) {
-            if (is_null($item["product_id"])){
+            if (is_null($item["product_id"]) || empty($item["quantity"])){
                 continue;
             }
             $price = str_replace(',', '', $item['price']);
