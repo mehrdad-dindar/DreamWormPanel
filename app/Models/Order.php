@@ -29,9 +29,9 @@ class Order extends Model
         $items = [];
         foreach ($this->items as $item) {
             if ($item->quantity < 1) {
-                array_push($items, $item->quantity * 1000 . ' گرم ' . $item->product->name);
+                array_push($items, $item->quantity * 1000 . ' گرم ' . $item->product?->name);
             }else {
-                array_push($items, $item->quantity . ' کیلوگرم ' . $item->product->name);
+                array_push($items, $item->quantity . ' کیلوگرم ' . $item->product?->name);
             }
         }
         return $items;
