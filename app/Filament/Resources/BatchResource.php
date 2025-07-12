@@ -42,6 +42,7 @@ class BatchResource extends Resource
                             ->translateLabel()
                             ->prefixIcon('heroicon-o-tag')
                             ->required()
+                            ->unique(ignoreRecord: true)
                             ->numeric(),
                         Forms\Components\TextInput::make('actual_boxes')
                             ->translateLabel()
