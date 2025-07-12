@@ -8,3 +8,5 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command("dreamworm:send-follow-up-sms")->dailyAt("10:00");
+
+Schedule::command('reminder:send')->dailyAt('18:00');
