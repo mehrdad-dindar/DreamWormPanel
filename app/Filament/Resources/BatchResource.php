@@ -42,6 +42,7 @@ class BatchResource extends Resource
                             ->translateLabel()
                             ->prefixIcon('heroicon-o-tag')
                             ->required()
+                            ->unique(ignoreRecord: true)
                             ->numeric(),
                         Forms\Components\TextInput::make('actual_boxes')
                             ->translateLabel()
@@ -129,6 +130,7 @@ class BatchResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('batch_number')
                     ->translateLabel()
