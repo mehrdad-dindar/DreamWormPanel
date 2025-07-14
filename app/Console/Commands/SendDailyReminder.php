@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Batch;
+use App\Services\N8nTelegram;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Notification;
@@ -94,33 +95,15 @@ class SendDailyReminder extends Command
         }
         // ارسال پیام به تلگرام
         try {
-            Notification::route('telegram', config('services.telegram-bot-api.chat_id'))
-                ->notifyNow(new class($message) extends \Illuminate\Notifications\Notification {
-                    protected $message;
-
-                    public function __construct($message)
-                    {
-                        $this->message = $message;
-                    }
-
-                    public function via($notifiable)
-                    {
-                        return ['telegram'];
-                    }
-
-                    public function toTelegram($notifiable)
-                    {
-                        return TelegramMessage::create()
-                            ->button('ثبت گزارش',route('filament.admin.resources.work-sessions.create'))
-                            ->button('ثبت دسته',route('filament.admin.resources.batches.create'))
-                            ->button('ثبت تراکنش',route('filament.admin.resources.transactions.create'))
-                            ->content($this->message);
-                    }
-                });
+            $n8n = new N8nTelegram();
+            $n8n->sendToN8nWebhook([
+                'chat_id' => config('services.telegram-bot-api.chat_id'),
+                'text' => $message
+            ]);
             $this->info('Reminder sent successfully!');
         } catch (\Exception $e) {
-            \Log::error('Failed to send Telegram message: ' . $e->getMessage());
-            $this->error('Failed to send Telegram message: ' . $e->getMessage());
+            \Log::error('Failed to send N8nTelegram message: ' . $e->getMessage());
+            $this->error('Failed to send N8nTelegram message: ' . $e->getMessage());
         }
     }
 }
