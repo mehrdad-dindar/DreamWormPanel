@@ -18,10 +18,11 @@ class BatchCreatedChart extends ChartWidget
         $labels = $batches->pluck('batch_number')->map(fn($n) => "دسته $n")->toArray();
         $values = $batches->pluck('actual_boxes')->toArray();
 
+
         return [
             'datasets' => [
                 [
-                    'label' => 'تعداد جعبه‌ها',
+                    'label' => 'تعداد جعبه‌ها '.$batches->sum('actual_boxes'),
                     'data' => $values,
                     'backgroundColor' => '#38bdf8',
                     'borderColor' => '#0284c7',
