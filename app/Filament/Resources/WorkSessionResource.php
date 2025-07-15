@@ -57,7 +57,7 @@ class WorkSessionResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->defaultSort('created_at', 'desc')
+            ->defaultSort('start_time', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('user.name')
                     ->translateLabel()
@@ -85,6 +85,11 @@ class WorkSessionResource extends Resource
                             return $minutes . ' دقیقه';
                         }
                     }),
+                Tables\Columns\TextColumn::make('description')
+                    ->icon('heroicon-s-clock')
+                    ->formatStateUsing(fn($state)=> substr($state, 0, 25) . ' ...')
+                    ->tooltip(fn($state)=> $state)
+                    ->translateLabel(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->translateLabel()
                     ->jalaliDateTime('d F Y - H:i')

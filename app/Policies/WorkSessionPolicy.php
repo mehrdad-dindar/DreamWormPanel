@@ -39,7 +39,11 @@ class WorkSessionPolicy
      */
     public function update(User $user, WorkSession $workSession): bool
     {
-        return $user->can('update_work::session');
+        if ($user->hasRole('super_admin')) {
+            return true;
+        }
+
+        return $user->can('update_work::session') && $user->id === $workSession->user_id;
     }
 
     /**
@@ -47,7 +51,11 @@ class WorkSessionPolicy
      */
     public function delete(User $user, WorkSession $workSession): bool
     {
-        return $user->can('delete_work::session');
+        if ($user->hasRole('super_admin')) {
+            return true;
+        }
+
+        return $user->can('delete_work::session') && $user->id === $workSession->user_id;
     }
 
     /**
