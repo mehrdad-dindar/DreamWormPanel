@@ -59,6 +59,12 @@ class WorkSessionResource extends Resource
         return $table
             ->defaultSort('start_time', 'desc')
             ->columns([
+                Tables\Columns\ImageColumn::make('user.avatar_url')
+                    ->label(' ')
+                    ->width(40)
+                    ->circular()
+                    ->defaultImageUrl(fn ($record): string => 'https://ui-avatars.com/api/?name=' . $record->user->name . '&color=FFFFFF&background=09090b')
+                    ->disk('avatar'),
                 Tables\Columns\TextColumn::make('user.name')
                     ->translateLabel()
                     ->sortable(),

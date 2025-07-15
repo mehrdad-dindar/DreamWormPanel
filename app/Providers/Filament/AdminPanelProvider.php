@@ -58,6 +58,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->plugins([
                 FilamentEditProfilePlugin::make()
+                    ->shouldRegisterNavigation(false)
                     ->shouldShowEmailForm()
                     ->shouldShowDeleteAccountForm(false)
                     ->shouldShowSanctumTokens()
