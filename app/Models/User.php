@@ -27,6 +27,7 @@ class User extends Authenticatable
         'phone',
         'email',
         'password',
+        'avatar_url',
     ];
 
     /**
@@ -72,6 +73,13 @@ class User extends Authenticatable
             $model->id_name = $model->generateIdName($model->phone, $model->name);
         });
     }
+
+    public function getFilamentAvatarUrl(): ?string
+    {
+        $avatarColumn = config('filament-edit-profile.avatar_column', 'avatar_url');
+        return $this->$avatarColumn ? url($this->$avatarColumn) : null;
+    }
+
 
     private function generateIdName($phone, $name)
     {
