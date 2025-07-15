@@ -49,7 +49,7 @@ class WorkSessionChart extends ChartWidget
                     ->filter(fn($s) => $s->user_id == $userId && verta($s->start_time)->format('d F') == $day)
                     ->sum(fn($s) => Carbon::parse($s->start_time)->diffInMinutes(Carbon::parse($s->end_time)));
 
-                $dailyData[] = $minutes;
+                $dailyData[] = round($minutes / 60,1);
                 $totalMinutes += $minutes;
             }
 
@@ -61,14 +61,14 @@ class WorkSessionChart extends ChartWidget
                 'label' => "{$name} ({$totalFormatted})",
                 'data' => $dailyData,
                 'backgroundColor' => $color,
-                'borderColor' => null,
+                'borderColor' => $color,
             ];
         }
 
         self::$description = "مجموع کارکرد ماه کارگاه: ". $this->getTotalToClock($total);
 
         return [
-            'labels' => array_values($days), // روزها به زبان فارسی
+            'labels' => array_values($days),
             'datasets' => $datasets,
         ];
     }
@@ -77,12 +77,11 @@ class WorkSessionChart extends ChartWidget
     protected function getColorByUser($userId): string
     {
         $colors = [
-            '#F44336', '#E91E63', '#9C27B0', '#3F51B5',
-            '#2196F3', '#03A9F4', '#00BCD4', '#009688',
+            '#F44336', '#BFECFF', '#9C27B0', '#3F51B5',
+            '#2196F3', '#FFF9BD', '#FF8080', '#009688',
             '#4CAF50', '#8BC34A', '#CDDC39', '#FFC107',
             '#FF9800', '#FF5722', '#795548', '#607D8B',
         ];
-
         return $colors[$userId % count($colors)];
     }
 
