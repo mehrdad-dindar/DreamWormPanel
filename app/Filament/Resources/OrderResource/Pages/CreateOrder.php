@@ -28,6 +28,7 @@ class CreateOrder extends CreateRecord
         if ($data['send_sms']) {
             $this->sms = true;
         }
+        $data['status'] = "pending";
 
         unset($data['send_sms']);
         return $data;
@@ -35,8 +36,7 @@ class CreateOrder extends CreateRecord
 
     protected function afterCreate(): void
     {
-        if ($this->sms)
-            event(new OrderCreated($this->record));
+        event(new OrderCreated($this->record, $this->sms));
     }
 
 //    protected function getRedirectUrl(): string

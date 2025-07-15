@@ -30,7 +30,7 @@ class N8nTelegram
     public function sendToN8nWebhook(array $data): array
     {
         $response = Http::withBasicAuth($this->username, $this->password)
-            ->post('https://dreamworm.app.n8n.cloud/webhook-test/to-telegram', $data);
+            ->post('https://dreamworm.app.n8n.cloud/webhook/to-telegram', $data);
 
         if ($response->successful()) {
             return [

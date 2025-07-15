@@ -18,13 +18,15 @@ class OrderCreated
 
     public Order $order;
     public User $customer;
+    public bool $sendSms;
     /**
      * Create a new event instance.
      */
-    public function __construct($order)
+    public function __construct($order, bool $sendSms)
     {
         $this->order = $order;
         $this->customer = $order->customer;
+        $this->sendSms = $sendSms;
     }
 
     /**
