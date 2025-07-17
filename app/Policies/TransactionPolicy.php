@@ -39,11 +39,7 @@ class TransactionPolicy
      */
     public function update(User $user, Transaction $transaction): bool
     {
-        if ($user->hasRole('super_admin')) {
-            return true;
-        }
-
-        return $user->can('update_transaction::session') && $user->id === $transaction->user_id;
+        return $user->can('update_transaction');
     }
 
     /**

@@ -14,6 +14,7 @@ use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Widgets;
+use FilamentWebpush\FilamentWebpushPlugin;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -57,6 +58,8 @@ class AdminPanelProvider extends PanelProvider
                     ->icon('heroicon-m-user-circle')
             ])
             ->plugins([
+                FilamentWebpushPlugin::make()
+                    ->registerSubscriptionStatsWidget(),
                 FilamentEditProfilePlugin::make()
                     ->shouldRegisterNavigation(false)
                     ->shouldShowEmailForm()

@@ -7,6 +7,7 @@
     "version": "0.1.1",
     "require": {
         "php": "^8.2",
+        "andrefelipe18/filament-webpush": "^1.1",
         "bezhansalleh/filament-shield": "^3.3",
         "filament/filament": "^3.3",
         "hekmatinasser/verta": "^8.5",

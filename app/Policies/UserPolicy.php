@@ -49,16 +49,8 @@ class UserPolicy
      * @param  \App\Models\User  $user
      * @return bool
      */
-    public function update(User $user, User $targetUser): bool
+    public function update(User $user): bool
     {
-        if ($user->hasRole('super_admin')) {
-            return true;
-        }
-
-        if ($targetUser->hasRole('super_admin')) {
-            return false;
-        }
-
         return $user->can('update_user');
     }
 
@@ -68,16 +60,8 @@ class UserPolicy
      * @param  \App\Models\User  $user
      * @return bool
      */
-    public function delete(User $user, User $targetUser): bool
+    public function delete(User $user): bool
     {
-        if ($user->hasRole('super_admin')) {
-            return true;
-        }
-
-        if ($targetUser->hasRole('super_admin')) {
-            return false;
-        }
-
         return $user->can('delete_user');
     }
 
