@@ -43,13 +43,13 @@ class CreateOrder extends CreateRecord
         $this->sendNotificationToAdmins($this->record);
     }
 
-//    protected function getRedirectUrl(): string
-//    {
-//        return $this->getResource()::getUrl('index');
-//    }
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
     private function sendNotificationToAdmins(?\Illuminate\Database\Eloquent\Model $record): void
     {
-        $superAdmins = Role::findByName('super_admin')->users;
-        Notification::send($superAdmins, new NewOrderPlaced(order: $record));
+        $panel_users = Role::findByName('panel_user')->users;
+        Notification::send($panel_users, new NewOrderPlaced(order: $record));
     }
 }
