@@ -93,7 +93,8 @@ class WorkSessionResource extends Resource
                     }),
                 Tables\Columns\TextColumn::make('description')
                     ->icon('heroicon-s-clock')
-                    ->formatStateUsing(fn($state)=> substr($state, 0, 25) . ' ...')
+//                    ->formatStateUsing(fn($state)=> substr($state, 0, 25) . ' ...')
+                    ->words(4)
                     ->tooltip(fn($state)=> $state)
                     ->translateLabel(),
                 Tables\Columns\TextColumn::make('created_at')

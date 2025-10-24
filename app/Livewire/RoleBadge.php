@@ -6,17 +6,16 @@ use Livewire\Component;
 
 class RoleBadge extends Component
 {
-    public $roles='ss';
+    public $roles='';
 
-    public function mount()
-    {
-        $this->roles = auth()->user()->getRoleNames()->implode('name',', ');
-    }
     public function render()
     {
+        foreach (auth()->user()->getRoleNames() as $role) {
+            $this->roles .= __('role.'.$role) . " ";
+        }
         return <<<'HTML'
         <span style="color: #DB8121">
-            { {{__('role.'.$roles)}} }
+            { {{$roles}} }
         </span>
         HTML;
     }
