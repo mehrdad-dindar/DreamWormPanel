@@ -57,8 +57,14 @@ class WorkSessionResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->defaultSort('created_at', 'desc')
+            ->defaultSort('start_time', 'desc')
             ->columns([
+                Tables\Columns\ImageColumn::make('user.avatar_url')
+                    ->label(' ')
+                    ->width(40)
+                    ->circular()
+                    ->defaultImageUrl(fn ($record): string => 'https://ui-avatars.com/api/?name=' . $record->user->name . '&color=FFFFFF&background=09090b')
+                    ->disk('avatar'),
                 Tables\Columns\TextColumn::make('user.name')
                     ->translateLabel()
                     ->sortable(),
@@ -85,6 +91,12 @@ class WorkSessionResource extends Resource
                             return $minutes . ' دقیقه';
                         }
                     }),
+                Tables\Columns\TextColumn::make('description')
+                    ->icon('heroicon-s-clock')
+//                    ->formatStateUsing(fn($state)=> substr($state, 0, 25) . ' ...')
+                    ->words(4)
+                    ->tooltip(fn($state)=> $state)
+                    ->translateLabel(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->translateLabel()
                     ->jalaliDateTime('d F Y - H:i')
