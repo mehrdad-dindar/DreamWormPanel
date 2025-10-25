@@ -27,7 +27,7 @@ trait Sms
             $bulkID = IPPanel::sendPattern(
                 $patternCode,
                 "+983000505",
-                '+98'.intval($phone),
+                '+98'. (int)$phone,
                 $patternValues
             );
             return $bulkID;
