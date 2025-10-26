@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Events\FifteenDaysPassed;
+use App\Jobs\SendReminderSms;
 use App\Models\Order;
 use Illuminate\Console\Command;
 
@@ -27,11 +28,26 @@ class SendFollowUpMessages extends Command
      */
     public function handle()
     {
-        $orders = Order::whereDate('created_at', now()->subDays(15))->get();
+        $orders = Order::with('customer')
+            ->whereDate('created_at', now()->subDays(15))
+            ->get();
+
         foreach ($orders as $order) {
-            $customer = $order->customer;
-            if (!$customer) continue;
-            event(new FifteenDaysPassed($customer));
+            if ($order->customer) {
+                SendReminderSms::dispatch($order->customer);
+            }
         }
+
+        info('Fifteen-day reminders dispatched successfully.', [
+            $orders->map(function ($order) {
+                return [
+                    "user_id" => $order->user_id,
+                    "phone" => $order->customer->phone,
+                    "order_id" => $order->id,
+                    "order_price" => $order->price,
+                    "created_at" => $order->created_at,
+                ];
+            })
+        ]);
     }
 }
