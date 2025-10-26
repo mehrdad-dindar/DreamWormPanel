@@ -171,12 +171,13 @@ class ProcessWooOrderCreate implements ShouldQueue
             $description .= $this->payload["customer_note"] . "\n";
         }
 
-        $customer->transactions->create([
+        $customer->transactions()->create([
             "type" => true,
             "amount" => $this->payload['total'],
             "category" => "سفارش سایت",
             "description" => $description
         ]);
+
     }
 
 }
