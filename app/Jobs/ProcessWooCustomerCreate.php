@@ -88,6 +88,8 @@ class ProcessWooCustomerCreate implements ShouldQueue
 
         // upsert/update-or-create
         $customer = User::updateOrCreate($match, $data);
+        $customer->assignRole('customer');
+        $customer->save();
 
         // تصاویر: اگر لینک تصویر باشه دانلود و ذخیره کن (اختیاری ولی مفید)
 //        if (!empty($productData['images']) && is_array($productData['images'])) {
