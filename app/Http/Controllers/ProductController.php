@@ -43,9 +43,9 @@ class ProductController extends Controller
 
     public function updateWebhooks(Request $request)
     {
-        $secret = config('services.woocommerce.webhook_secret') ?? env('WC_WEBHOOK_SECRET');
+//        $secret = config('services.woocommerce.webhook_secret') ?? env('WC_WEBHOOK_SECRET');
         $payload = $request->getContent();
-        $signatureHeader = $request->header('X-Wc-Webhook-Signature');
+//        $signatureHeader = $request->header('X-Wc-Webhook-Signature');
 
 //        if (! verifySignature($payload, $signatureHeader, $secret)) {
 //            Log::warning('WooCommerce webhook signature mismatch', ['headers' => $request->headers->all()]);

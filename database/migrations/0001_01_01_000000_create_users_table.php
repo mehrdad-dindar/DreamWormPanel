@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('phone')->unique();
+            $table->unsignedBigInteger('woo_id')->nullable()->index();
             $table->string('email')->unique()->nullable();
             $table->string('id_name')->nullable();
             $table->timestamp('email_verified_at')->nullable();
