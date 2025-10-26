@@ -100,15 +100,16 @@ class ProcessWooOrderCreate implements ShouldQueue
     private function getCustomer(array $orderData)
     {
         $match = [];
-        if (isset($orderData['customer_id'])) {
-            $match["woo_id"] = $orderData['customer_id'];
-        } elseif (isset($orderData['billing']['phone'])) {
+        if (isset($orderData['billing']['phone'])) {
             $phone = $orderData['billing']['phone'];
             if (Str::startsWith($phone, "+98")) {
                 $phone = Str::of($phone)->replace('+98', '0');
             }
             $match['phone'] = $phone;
+        } elseif (isset($orderData['customer_id'])) {
+            $match["woo_id"] = $orderData['customer_id'];
         }
+
         $data = [
             'name' => trim($orderData['billing']['first_name']. " " . $orderData['billing']['last_name']) ?? "مشتری",
             'email' => $orderData['billing']['email'] ?? null,
