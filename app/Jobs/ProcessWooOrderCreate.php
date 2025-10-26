@@ -39,10 +39,10 @@ class ProcessWooOrderCreate implements ShouldQueue
             switch ($this->topic) {
                 case 'order.created':
                 case 'order.updated':
-                    $this->syncOrder($this->payload);
+                    $this->syncOrder();
                     break;
                 case 'order.deleted':
-                    $this->deleteCustomer($this->payload);
+                    $this->deleteOrder();
                     break;
                 default:
                     Log::info('Unhandled Woo topic', ['topic' => $this->topic]);
@@ -56,9 +56,9 @@ class ProcessWooOrderCreate implements ShouldQueue
         }
     }
 
-    protected function syncOrder(array $payload): void
+    protected function syncOrder(): void
     {
-        $orderData = $payload['order'] ?? $payload;
+        $orderData = $this->payload['order'] ?? $this->payload;
 
         $customer = $this->getCustomer($orderData);
         $wooId = $orderData['id'] ?? null;
@@ -76,7 +76,7 @@ class ProcessWooOrderCreate implements ShouldQueue
 
         $data = [
             'customer_id' => $customer->id,
-            'user_id' => 1,
+            'user_id' => $customer->id,
             'price' => $price,
             'deliver_type' => $deliverType,
             'status' => $status
@@ -85,10 +85,14 @@ class ProcessWooOrderCreate implements ShouldQueue
         $order = Order::updateOrCreate($match, $data);
         $this->syncOrderItems($order, $orderData['line_items'] ?? []);
 
+        if ($status === "processing"){
+            $this->setTransaction($customer);
+        }
+
         Log::info('order synced from Woo', ['order_id' => $order->id, 'woo_id' => $wooId]);
     }
 
-    protected function deleteCustomer(array $payload)
+    protected function deleteOrder()
     {
         //
     }
@@ -147,6 +151,31 @@ class ProcessWooOrderCreate implements ShouldQueue
         }
 
         Log::info('Order items synced', ['order_id' => $order->id]);
+    }
+
+    protected function setTransaction(User $customer)
+    {
+        $description = "پرداخت سفارش شماره: " . $this->payload["id"] . "\n";
+
+        if (isset($this->payload["payment_method_title"])){
+            $description .= $this->payload["payment_method_title"] . "\n";
+        }
+
+        if (isset($this->payload["transaction_id"])){
+            $description .= $this->payload["transaction_id"] . "\n";
+        }
+
+        if (isset($this->payload["customer_note"])){
+            $description .= "================ توضیحات سفارش ===============\n";
+            $description .= $this->payload["customer_note"] . "\n";
+        }
+
+        $customer->transactions->create([
+            "type" => true,
+            "amount" => $this->payload['total'],
+            "category" => "سفارش سایت",
+            "description" => $description
+        ]);
     }
 
 }
