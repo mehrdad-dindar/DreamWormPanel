@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
             ShieldSeeder::class,
 //            RoleSeeder::class,
             UserSeeder::class,
-            ProductSeeder::class,
+//            ProductSeeder::class,
         ]);
     }
 }

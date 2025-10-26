@@ -15,6 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->integer('price');
+            $table->string('sku')->nullable()->index();
+            $table->unsignedBigInteger('woo_id')->nullable()->index();
+            $table->integer('stock')->nullable();
+            $table->string('permalink')->nullable();
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }
