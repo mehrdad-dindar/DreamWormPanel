@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('customer_id')->constrained('users', 'id');
             $table->foreignId('user_id')->constrained('users');
+            $table->unsignedBigInteger('woo_id')->nullable()->index();
             $table->integer('price');
             $table->boolean('deliver_type')->default(true)->comment("1=deliver on workshop,0=deliver to address");
             $table->enum('status', ['pending', 'processing', 'completed', 'cancelled'])->default('pending');
