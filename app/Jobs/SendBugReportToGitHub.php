@@ -38,7 +38,7 @@ class SendBugReportToGitHub implements ShouldQueue
             if ($response->successful()) {
                 $this->report->update(['status' => 'sent_to_github']);
             }
-            $msg = "🐞 باگ جدید گزارش شد:\n{$this->report->title}\n\n{$this->report->description}";
+            $msg = "🐞 باگ جدید گزارش شد:\n{$this->report->title}\n\n{$this->report->description}\n\nReported by: " . ($this->report->user?->name ?? 'Guest');
             $this->sendToTelegram($msg);
         } catch (\Exception $e) {
             \Log::error("Exeption ". $e->getMessage(), ['exception' => $e]);
