@@ -41,4 +41,7 @@ return [
     'woocommerce' => [
         'webhook_secret' => env('WC_WEBHOOK_SECRET'),
     ],
+    'github' => [
+        'token' => env('GITHUB_TOKEN'),
+    ]
 ];
