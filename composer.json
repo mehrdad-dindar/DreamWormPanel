@@ -7,7 +7,7 @@
     "version": "1.3.0",
     "require": {
         "php": "^8.2",
-        "andrefelipe18/filament-webpush": "^1.1",
+        "ext-zip": "*",
         "bezhansalleh/filament-shield": "^3.3",
         "filament/filament": "^3.3",
         "hekmatinasser/verta": "^8.5",
@@ -22,8 +22,7 @@
         "livewire/volt": "^1.7.0",
         "marjose123/filament-lockscreen": "^2.6",
         "mokhosh/filament-jalali": "v4.10.0",
-        "spatie/laravel-backup": "^9.3",
-        "ext-zip": "*"
+        "spatie/laravel-backup": "^9.3"
     },
     "require-dev": {
         "roave/security-advisories": "dev-latest"

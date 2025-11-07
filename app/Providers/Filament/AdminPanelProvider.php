@@ -58,8 +58,6 @@ class AdminPanelProvider extends PanelProvider
                     ->icon('heroicon-m-user-circle')
             ])
             ->plugins([
-                FilamentWebpushPlugin::make()
-                    ->registerSubscriptionStatsWidget(),
                 FilamentEditProfilePlugin::make()
                     ->shouldRegisterNavigation(false)
                     ->shouldShowEmailForm()
