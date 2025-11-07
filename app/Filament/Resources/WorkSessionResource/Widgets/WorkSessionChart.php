@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\WorkSessionResource\Widgets;
 
+use App\Models\User;
 use App\Models\WorkSession;
 use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
@@ -9,8 +10,8 @@ use Illuminate\Support\Facades\Auth;
 
 class WorkSessionChart extends ChartWidget
 {
-    protected static ?string $heading = 'نمودار ساعت‌های کارکرد ماه جاری';
-    protected static ?string $description = null;
+    protected ?string $heading = 'نمودار ساعت‌های کارکرد ماه جاری';
+    protected ?string $description = null;
 
     protected function getData(): array
     {
@@ -37,7 +38,7 @@ class WorkSessionChart extends ChartWidget
         $datasets = [];
 
         foreach ($userIds as $userId) {
-            $user = \App\Models\User::find($userId);
+            $user = User::find($userId);
             $name = $user?->name ?? "کاربر {$userId}";
             $color = $this->getColorByUser($userId);
 

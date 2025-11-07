@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\OrderResource\Pages;
 
+use Illuminate\Database\Eloquent\Model;
 use App\Events\OrderCreated;
 use App\Filament\Resources\OrderResource;
 use App\Models\User;
@@ -47,7 +48,7 @@ class CreateOrder extends CreateRecord
     {
         return $this->getResource()::getUrl('index');
     }
-    private function sendNotificationToAdmins(?\Illuminate\Database\Eloquent\Model $record): void
+    private function sendNotificationToAdmins(?Model $record): void
     {
         $panel_users = Role::findByName('panel_user')->users;
         Notification::send($panel_users, new NewOrderPlaced(order: $record));

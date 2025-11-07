@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\ProductResource\Pages;
 
+use Filament\Actions\CreateAction;
+use Filament\Actions\Action;
 use App\Filament\Resources\ProductResource;
 use App\Traits\Woo;
 use Filament\Actions;
@@ -16,8 +18,8 @@ class ListProducts extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
-            Actions\Action::make('sync')
+            CreateAction::make(),
+            Action::make('sync')
                 ->label(__('Sync by WebSite'))
                 ->requiresConfirmation()
                 ->icon('heroicon-s-arrows-up-down')

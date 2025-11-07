@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\WorkSessionResource\Pages;
 
+use Filament\Actions\DeleteAction;
 use App\Filament\Resources\WorkSessionResource;
 use Carbon\Carbon;
 use Filament\Actions;
@@ -14,7 +15,7 @@ class EditWorkSession extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 

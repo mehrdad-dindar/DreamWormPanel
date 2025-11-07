@@ -2,11 +2,12 @@
 
 namespace App\Filament\Resources\TransactionResource\Pages;
 
+use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Actions\CreateAction;
 use App\Filament\Resources\TransactionResource;
 use App\Filament\Resources\TransactionResource\Widgets\MonthlyExpenseChart;
 use App\Filament\Resources\TransactionResource\Widgets\MonthlyIncomeChart;
 use Filament\Actions;
-use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
 
 class ListTransactions extends ListRecords
@@ -38,7 +39,7 @@ class ListTransactions extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            CreateAction::make(),
         ];
     }
 }

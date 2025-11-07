@@ -8,9 +8,9 @@ use Filament\Widgets\ChartWidget;
 
 class MonthlyIncomeChart extends ChartWidget
 {
-    protected static ?string $heading = 'نمودار درآمد ماه جاری';
-    protected static string $color = 'success';
-    protected static ?string $description = null;
+    protected ?string $heading = 'نمودار درآمد ماه جاری';
+    protected string $color = 'success';
+    protected ?string $description = null;
 
     /**
      * @throws Exception

@@ -2,16 +2,32 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Hidden;
+use Filament\Actions\Action;
+use Filament\Schemas\Components\Fieldset;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\Placeholder;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\OrderResource\Pages\ListOrders;
+use App\Filament\Resources\OrderResource\Pages\CreateOrder;
+use App\Filament\Resources\OrderResource\Pages\EditOrder;
 use App\Filament\Resources\OrderResource\Pages;
 use App\Filament\Resources\OrderResource\RelationManagers;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
 use Filament\Forms;
-use Filament\Forms\Components\Actions\Action;
-use Filament\Forms\Form;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Support\RawJs;
 use Filament\Tables;
@@ -23,24 +39,24 @@ class OrderResource extends Resource
 {
     protected static ?string $model = Order::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-shopping-cart';
-    protected static ?string $activeNavigationIcon = 'heroicon-s-shopping-cart';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-shopping-cart';
+    protected static string | \BackedEnum | null $activeNavigationIcon = 'heroicon-s-shopping-cart';
     protected static ?string $navigationLabel = 'سفارشات';
     protected static ?string $breadcrumb = 'سفارشات';
     protected static ?string $pluralModelLabel = 'سفارشات';
 
     protected static ?string $modelLabel = 'سفارش';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Grid::make('order')
+        return $schema
+            ->components([
+                Grid::make('order')
                     ->columns(3)
                 ->schema([
-                    Forms\Components\Section::make('موارد سفارش')
+                    Section::make('موارد سفارش')
                         ->schema([
-                            Forms\Components\Repeater::make('items')
+                            Repeater::make('items')
                                 ->label(__('Items'))
                                 ->translateLabel()
                                 ->relationship()
@@ -48,9 +64,9 @@ class OrderResource extends Resource
                                 ->defaultItems(1)
                                 ->hiddenLabel()
                                 ->schema([
-                                    Forms\Components\Grid::make()
+                                    Grid::make()
                                         ->schema([
-                                            Forms\Components\Select::make('product_id')
+                                            Select::make('product_id')
                                                 ->translateLabel()
                                                 ->reactive()
                                                 ->live()
@@ -66,7 +82,7 @@ class OrderResource extends Resource
                                                     }
                                                 })
                                                 ->relationship('product', 'name'),
-                                            Forms\Components\TextInput::make('quantity')
+                                            TextInput::make('quantity')
                                                 ->translateLabel()
                                                 ->hidden(fn(Get $get) => is_null($get('product_id')))
                                                 ->numeric()
@@ -84,12 +100,12 @@ class OrderResource extends Resource
                                                     }
                                                 })
                                                 ->label(__('Quantity')),
-                                            Forms\Components\Hidden::make('custom_price')
+                                            Hidden::make('custom_price')
                                                 ->live()
                                                 ->reactive()
                                                 ->dehydrated()
                                                 ->default(0),
-                                            Forms\Components\TextInput::make('price')
+                                            TextInput::make('price')
                                                 ->hidden(fn(Get $get) => is_null($get('product_id')))
                                                 ->prefixActions([
                                                     Action::make('edit_price')
@@ -123,13 +139,13 @@ class OrderResource extends Resource
                         ])
                         ->columnSpan(2)
                         ->columns()->icon('heroicon-o-list-bullet'),
-                    Forms\Components\Grid::make('sideBar')
+                    Grid::make('sideBar')
                         ->columnSpan(1)
                         ->schema([
-                            Forms\Components\Section::make('مشتری')
+                            Section::make('مشتری')
                                 ->icon('heroicon-o-user')
                                 ->schema([
-                                    Forms\Components\Select::make('customer_id')
+                                    Select::make('customer_id')
                                         ->label(__('Customer'))
                                         ->prefixIcon('heroicon-o-user')
                                         ->options(function () {
@@ -140,13 +156,13 @@ class OrderResource extends Resource
                                         ->preload()
                                         ->live()
                                         ->createOptionForm([
-                                            Forms\Components\Grid::make()
+                                            Grid::make()
                                                 ->schema([
-                                                    Forms\Components\TextInput::make('name')
+                                                    TextInput::make('name')
                                                         ->prefixIcon('heroicon-o-user')
                                                         ->label(__('Customer Name'))
                                                         ->required(),
-                                                    Forms\Components\TextInput::make('phone')
+                                                    TextInput::make('phone')
                                                         ->label(__('Customer Phone'))
                                                         ->prefixIcon('heroicon-o-phone')
                                                         ->live()
@@ -168,16 +184,16 @@ class OrderResource extends Resource
                                         })
                                         ->createOptionAction(fn ($action) => $action->modalWidth('sm'))
                                         ->required(),
-                                    Forms\Components\Fieldset::make('Deliver type')
+                                    Fieldset::make('Deliver type')
                                         ->translateLabel()
                                         ->schema([
-                                            Forms\Components\Toggle::make('deliver_type')
+                                            Toggle::make('deliver_type')
                                                 ->label(__('Workshop door'))
                                                 ->live()
                                                 ->default(true)
                                                 ->reactive()
                                                 ->dehydrated(),
-                                            Forms\Components\TextInput::make('address')
+                                            TextInput::make('address')
                                                 ->required(fn(Get $get) => !$get('deliver_type'))
                                                 ->live()
                                                 ->translateLabel()
@@ -186,13 +202,13 @@ class OrderResource extends Resource
                                                 ->hidden(fn(Get  $get) => $get('deliver_type')),
                                         ])
                                 ]),
-                            Forms\Components\Hidden::make('price'),
-                            Forms\Components\Section::make('صورت حساب')
+                            Hidden::make('price'),
+                            Section::make('صورت حساب')
                                 ->icon('heroicon-o-currency-dollar')
                                 ->schema([
-                                    Forms\Components\Toggle::make('send_sms')
+                                    Toggle::make('send_sms')
                                         ->label(__('Send Invoice SMS')),
-                                    Forms\Components\Placeholder::make('invoice')
+                                    Placeholder::make('invoice')
                                         ->translateLabel()
                                         ->hint(__('Total Price'))
                                         ->live()
@@ -213,21 +229,21 @@ class OrderResource extends Resource
         return $table
             ->defaultSort('created_at', 'desc')
             ->columns([
-                Tables\Columns\TextColumn::make('customer.name')
+                TextColumn::make('customer.name')
                     ->translateLabel()
                     ->description(fn($record) => $record->customer->phone)
                     ->sortable(),
-                Tables\Columns\TextColumn::make('order_items')
+                TextColumn::make('order_items')
                     ->translateLabel()
                     ->getStateUsing(fn($record) => $record->getOrderItems())
                     ->color('info')
                     ->badge(),
-                Tables\Columns\TextColumn::make('price')
+                TextColumn::make('price')
                     ->translateLabel()
                     ->suffix(' تومان')
                     ->numeric(locale: 'en')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('deliver_type')
+                TextColumn::make('deliver_type')
                     ->translateLabel()
                     ->getStateUsing(function ($record){
                         if ($record->deliver_type) {
@@ -235,19 +251,19 @@ class OrderResource extends Resource
                         }
                         return $record->customer->address->address;
                     }),
-                Tables\Columns\TextColumn::make('user.name')
+                TextColumn::make('user.name')
                     ->label(__('Submitted By'))
                     ->badge()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('status')
+                TextColumn::make('status')
                     ->translateLabel()
                     ->action(
-                        Tables\Actions\Action::make('changeStatus')
+                        Action::make('changeStatus')
                             ->translateLabel()
                             ->color('info')
                             ->icon('heroicon-o-check')
-                            ->form([
-                                Forms\Components\Select::make('status')
+                            ->schema([
+                                Select::make('status')
                                     ->translateLabel()
                                     ->native(false)
                                     ->options([
@@ -277,12 +293,12 @@ class OrderResource extends Resource
                             default => 'danger'
                         })
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->translateLabel()
                     ->jalaliDateTime('d F Y - H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->translateLabel()
                     ->jalaliDateTime('d F Y - H:i')
                     ->sortable()
@@ -291,18 +307,18 @@ class OrderResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\Action::make('Call')
+            ->recordActions([
+                Action::make('Call')
                     ->button()
                     ->color('success')
                     ->icon('heroicon-s-phone')
                     ->url(fn($record) => 'tel:+98'.intval($record->customer->phone))
                     ->translateLabel(),
-                Tables\Actions\EditAction::make(),
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -317,9 +333,9 @@ class OrderResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListOrders::route('/'),
-            'create' => Pages\CreateOrder::route('/create'),
-            'edit' => Pages\EditOrder::route('/{record}/edit'),
+            'index' => ListOrders::route('/'),
+            'create' => CreateOrder::route('/create'),
+            'edit' => EditOrder::route('/{record}/edit'),
         ];
     }
 

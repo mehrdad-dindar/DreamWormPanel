@@ -2,17 +2,27 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Fieldset;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\DatePicker;
+use Filament\Actions\Action;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Section;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\BatchResource\Pages\ListBatches;
+use App\Filament\Resources\BatchResource\Pages\CreateBatch;
+use App\Filament\Resources\BatchResource\Pages\EditBatch;
 use App\Filament\Resources\BatchResource\Pages;
 use App\Filament\Resources\BatchResource\RelationManagers;
 use App\Models\Batch;
 use Carbon\Carbon;
 use Filament\Forms;
-use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Form;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -24,30 +34,30 @@ class BatchResource extends Resource
 {
     protected static ?string $model = Batch::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-inbox-stack';
-    protected static ?string $activeNavigationIcon = 'heroicon-s-inbox-stack';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-inbox-stack';
+    protected static string | \BackedEnum | null $activeNavigationIcon = 'heroicon-s-inbox-stack';
     protected static ?string $navigationLabel = 'دسته‌های تولید';
     protected static ?string $breadcrumb = 'دسته‌های تولید';
     protected static ?string $pluralModelLabel = 'دسته‌ها';
 
     protected static ?string $modelLabel = 'دسته';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Fieldset::make()
+        return $schema
+            ->components([
+                Fieldset::make()
                     ->schema([
-                        Forms\Components\TextInput::make('batch_number')
+                        TextInput::make('batch_number')
                             ->translateLabel()
                             ->prefixIcon('heroicon-o-tag')
                             ->required()
                             ->unique(ignoreRecord: true)
                             ->numeric(),
-                        Forms\Components\TextInput::make('actual_boxes')
+                        TextInput::make('actual_boxes')
                             ->translateLabel()
                             ->numeric(),
-                        Forms\Components\DatePicker::make('egg_date')
+                        DatePicker::make('egg_date')
                             ->hintAction(
                                 Action::make('today')
                                     ->icon('heroicon-o-calendar')
@@ -67,7 +77,7 @@ class BatchResource extends Resource
                             })
                             ->jalali()
                             ->required(),
-                        Forms\Components\DatePicker::make('expected_harvest_date')
+                        DatePicker::make('expected_harvest_date')
                             ->jalali()
                             ->reactive()
                             ->default(fn(Get $get) => Carbon::parse($get('egg_date'))->addDays(70))
@@ -89,7 +99,7 @@ class BatchResource extends Resource
                             ->collapsed()
                             ->itemLabel(fn($state) => verta($state['date'])->format('d F Y'))
                             ->schema([
-                                Forms\Components\DatePicker::make('date')
+                                DatePicker::make('date')
                                     ->translateLabel()
                                     ->jalali()
                                     ->required(),
@@ -103,7 +113,7 @@ class BatchResource extends Resource
                             ->translateLabel()
                             ->default(Batch::calculateDates(type: 'feed',period: 14))
                             ->schema([
-                                Forms\Components\DatePicker::make('date')
+                                DatePicker::make('date')
                                     ->translateLabel()
                                     ->jalali()
                                     ->required(),
@@ -117,7 +127,7 @@ class BatchResource extends Resource
                             ->translateLabel()
                             ->default(Batch::calculateDates(type: 'fertilize',period: 3, interval: 20))
                             ->schema([
-                                Forms\Components\DatePicker::make('date')
+                                DatePicker::make('date')
                                     ->translateLabel()
                                     ->jalali()
                                     ->required(),
@@ -132,27 +142,27 @@ class BatchResource extends Resource
         return $table
             ->defaultSort('egg_date', 'desc')
             ->columns([
-                Tables\Columns\TextColumn::make('batch_number')
+                TextColumn::make('batch_number')
                     ->translateLabel()
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('egg_date')
+                TextColumn::make('egg_date')
                     ->translateLabel()
                     ->jalaliDate(format: 'd F Y')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('actual_boxes')
+                TextColumn::make('actual_boxes')
                     ->translateLabel()
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('expected_harvest_date')
+                TextColumn::make('expected_harvest_date')
                     ->translateLabel()
                     ->jalaliDate(format: 'd F Y')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -160,12 +170,12 @@ class BatchResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -180,9 +190,9 @@ class BatchResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListBatches::route('/'),
-            'create' => Pages\CreateBatch::route('/create'),
-            'edit' => Pages\EditBatch::route('/{record}/edit'),
+            'index' => ListBatches::route('/'),
+            'create' => CreateBatch::route('/create'),
+            'edit' => EditBatch::route('/{record}/edit'),
         ];
     }
 }

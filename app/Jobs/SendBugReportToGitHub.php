@@ -2,6 +2,8 @@
 
 namespace App\Jobs;
 
+use Exception;
+use Log;
 use App\Models\BugReport;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -40,8 +42,8 @@ class SendBugReportToGitHub implements ShouldQueue
             }
             $msg = "🐞 باگ جدید گزارش شد:\n{$this->report->title}\n\n{$this->report->description}\n\nReported by: " . ($this->report->user?->name ?? 'Guest');
             $this->sendToTelegram($msg);
-        } catch (\Exception $e) {
-            \Log::error("Exeption ". $e->getMessage(), ['exception' => $e]);
+        } catch (Exception $e) {
+            Log::error("Exeption ". $e->getMessage(), ['exception' => $e]);
         }
     }
 
@@ -69,9 +71,9 @@ class SendBugReportToGitHub implements ShouldQueue
                             ->content($this->message);
                     }
                 });
-            \Log::info('Bug Report Sent to Telegram');
-        } catch (\Exception $e) {
-            \Log::error('Failed to send Telegram message: ' . $e->getMessage());
+            Log::info('Bug Report Sent to Telegram');
+        } catch (Exception $e) {
+            Log::error('Failed to send Telegram message: ' . $e->getMessage());
         }
     }
 }

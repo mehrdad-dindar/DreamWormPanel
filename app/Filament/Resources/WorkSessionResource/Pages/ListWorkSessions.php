@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\WorkSessionResource\Pages;
 
+use Filament\Actions\CreateAction;
 use App\Filament\Resources\WorkSessionResource;
 use App\Filament\Resources\WorkSessionResource\Widgets\WorkSessionChart;
 use Filament\Actions;
@@ -14,7 +15,7 @@ class ListWorkSessions extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            CreateAction::make(),
         ];
     }
 

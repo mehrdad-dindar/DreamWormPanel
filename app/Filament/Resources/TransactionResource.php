@@ -2,13 +2,25 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\ToggleButtons;
+use Filament\Forms\Components\Textarea;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\TransactionResource\Pages\ListTransactions;
+use App\Filament\Resources\TransactionResource\Pages\CreateTransaction;
+use App\Filament\Resources\TransactionResource\Pages\EditTransaction;
 use App\Filament\Resources\TransactionResource\Pages;
 use App\Filament\Resources\TransactionResource\RelationManagers;
 use App\Filament\Resources\TransactionResource\Widgets\MonthlyExpenseChart;
 use App\Filament\Resources\TransactionResource\Widgets\MonthlyIncomeChart;
 use App\Models\Transaction;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\RawJs;
 use Filament\Tables;
@@ -18,20 +30,20 @@ class TransactionResource extends Resource
 {
     protected static ?string $model = Transaction::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-banknotes';
-    protected static ?string $activeNavigationIcon = 'heroicon-s-banknotes';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-banknotes';
+    protected static string | \BackedEnum | null $activeNavigationIcon = 'heroicon-s-banknotes';
     protected static ?string $navigationLabel = 'تراکنش ها';
     protected static ?string $breadcrumb = 'تراکنش ها';
     protected static ?string $pluralModelLabel = 'تراکنش ها';
 
     protected static ?string $modelLabel = 'تراکنش';
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Hidden::make('user_id')
+        return $schema
+            ->components([
+                Hidden::make('user_id')
                     ->default(auth()->id()),
-                Forms\Components\TextInput::make('amount')
+                TextInput::make('amount')
                     ->translateLabel()
                     ->mask(RawJs::make('$money($input)'))
                     ->suffix('تومان')
@@ -39,14 +51,14 @@ class TransactionResource extends Resource
                     ->mutateDehydratedStateUsing(fn ($state) => str_replace(',', '', $state))
                     ->numeric()
                     ->required(),
-                Forms\Components\ToggleButtons::make('type')
+                ToggleButtons::make('type')
                     ->inline()
                     ->default(0)
                     ->boolean(__('income'),__('expense')),
-                Forms\Components\TextInput::make('category')
+                TextInput::make('category')
                     ->translateLabel()
                     ->maxLength(255),
-                Forms\Components\Textarea::make('description')
+                Textarea::make('description')
                     ->translateLabel()
                     ->columnSpanFull(),
             ]);
@@ -57,36 +69,36 @@ class TransactionResource extends Resource
         return $table
             ->defaultSort('created_at', 'desc')
             ->columns([
-                Tables\Columns\ImageColumn::make('user.avatar_url')
+                ImageColumn::make('user.avatar_url')
                     ->label(' ')
                     ->width(40)
                     ->circular()
                     ->defaultImageUrl(fn ($record): string => 'https://ui-avatars.com/api/?name=' . $record->user->name . '&color=FFFFFF&background=09090b')
                     ->disk('avatar'),
-                Tables\Columns\TextColumn::make('user.name')
+                TextColumn::make('user.name')
                     ->translateLabel()
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('type')
+                TextColumn::make('type')
                     ->translateLabel()
                     ->formatStateUsing(fn($state) => match ((int)$state) {0 => __('expense'), 1 => __('income')})
                     ->color(fn($record) => $record->type ? 'success' : 'danger')
                     ->badge(),
-                Tables\Columns\TextColumn::make('amount')
+                TextColumn::make('amount')
                     ->translateLabel()
                     ->numeric(locale: 'en')
                     ->suffix(' تومان')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('category')
+                TextColumn::make('category')
                     ->translateLabel()
                     ->badge()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->translateLabel()
                     ->jalaliDateTime('d F Y - H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->translateLabel()
                     ->jalaliDateTime('d F Y - H:i')
                     ->sortable()
@@ -95,12 +107,12 @@ class TransactionResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -115,9 +127,9 @@ class TransactionResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListTransactions::route('/'),
-            'create' => Pages\CreateTransaction::route('/create'),
-            'edit' => Pages\EditTransaction::route('/{record}/edit'),
+            'index' => ListTransactions::route('/'),
+            'create' => CreateTransaction::route('/create'),
+            'edit' => EditTransaction::route('/{record}/edit'),
         ];
     }
 

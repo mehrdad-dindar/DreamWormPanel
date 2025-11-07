@@ -2,11 +2,24 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\DatePicker;
+use Filament\Schemas\Components\Fieldset;
+use Filament\Forms\Components\TimePicker;
+use Filament\Forms\Components\Textarea;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\WorkSessionResource\Pages\ListWorkSessions;
+use App\Filament\Resources\WorkSessionResource\Pages\CreateWorkSession;
+use App\Filament\Resources\WorkSessionResource\Pages\EditWorkSession;
 use App\Filament\Resources\WorkSessionResource\Pages;
 use App\Filament\Resources\WorkSessionResource\RelationManagers;
 use App\Models\WorkSession;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -17,38 +30,38 @@ class WorkSessionResource extends Resource
 {
     protected static ?string $model = WorkSession::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-clock';
-    protected static ?string $activeNavigationIcon = 'heroicon-s-clock';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-clock';
+    protected static string | \BackedEnum | null $activeNavigationIcon = 'heroicon-s-clock';
     protected static ?string $navigationLabel = 'جلسات کاری';
     protected static ?string $breadcrumb = 'جلسات کاری';
     protected static ?string $pluralModelLabel = 'جلسات کاری';
 
     protected static ?string $modelLabel = 'جلسه';
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Hidden::make('user_id')
+        return $schema
+            ->components([
+                Hidden::make('user_id')
                     ->default(auth()->id()),
-                Forms\Components\DatePicker::make('date')
+                DatePicker::make('date')
                     ->translateLabel()
                     ->required()
                     ->jalali()
                     ->closeOnDateSelection()
                     ->default(now()),
-                Forms\Components\Fieldset::make()
+                Fieldset::make()
                     ->schema([
-                        Forms\Components\TimePicker::make('start_time')
+                        TimePicker::make('start_time')
                             ->translateLabel()
                             ->seconds(false)
                             ->default(now()->format("H:i"))
                             ->required(),
-                        Forms\Components\TimePicker::make('end_time')
+                        TimePicker::make('end_time')
                             ->translateLabel()
                             ->seconds(false)
                             ->required(),
                     ]),
-                Forms\Components\Textarea::make('description')
+                Textarea::make('description')
                     ->translateLabel()
                     ->columnSpanFull(),
             ]);
@@ -59,24 +72,24 @@ class WorkSessionResource extends Resource
         return $table
             ->defaultSort('start_time', 'desc')
             ->columns([
-                Tables\Columns\ImageColumn::make('user.avatar_url')
+                ImageColumn::make('user.avatar_url')
                     ->label(' ')
                     ->width(40)
                     ->circular()
                     ->defaultImageUrl(fn ($record): string => 'https://ui-avatars.com/api/?name=' . $record->user->name . '&color=FFFFFF&background=09090b')
                     ->disk('avatar'),
-                Tables\Columns\TextColumn::make('user.name')
+                TextColumn::make('user.name')
                     ->translateLabel()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('start_time')
-                    ->translateLabel()
-                    ->jalaliDateTime('d F Y - H:i')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('end_time')
+                TextColumn::make('start_time')
                     ->translateLabel()
                     ->jalaliDateTime('d F Y - H:i')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('work_time')
+                TextColumn::make('end_time')
+                    ->translateLabel()
+                    ->jalaliDateTime('d F Y - H:i')
+                    ->sortable(),
+                TextColumn::make('work_time')
                     ->translateLabel()
                     ->state(function($record) {
                         $duration = verta($record->end_time)->diffMinutes($record->start_time);
@@ -91,18 +104,18 @@ class WorkSessionResource extends Resource
                             return $minutes . ' دقیقه';
                         }
                     }),
-                Tables\Columns\TextColumn::make('description')
+                TextColumn::make('description')
                     ->icon('heroicon-s-clock')
 //                    ->formatStateUsing(fn($state)=> substr($state, 0, 25) . ' ...')
                     ->words(4)
                     ->tooltip(fn($state)=> $state)
                     ->translateLabel(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->translateLabel()
                     ->jalaliDateTime('d F Y - H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->translateLabel()
                     ->jalaliDateTime('d F Y - H:i')
                     ->sortable()
@@ -111,12 +124,12 @@ class WorkSessionResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -131,9 +144,9 @@ class WorkSessionResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListWorkSessions::route('/'),
-            'create' => Pages\CreateWorkSession::route('/create'),
-            'edit' => Pages\EditWorkSession::route('/{record}/edit'),
+            'index' => ListWorkSessions::route('/'),
+            'create' => CreateWorkSession::route('/create'),
+            'edit' => EditWorkSession::route('/{record}/edit'),
         ];
     }
 }

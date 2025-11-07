@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendBugReportToGitHub;
 use App\Models\BugReport;
 use Illuminate\Http\Request;
 
@@ -16,7 +17,7 @@ class BugReportController extends Controller
         ]);
 
         // Dispatch job for async handling
-        dispatch(new \App\Jobs\SendBugReportToGitHub($bug))->onQueue('github issue');
+        dispatch(new SendBugReportToGitHub($bug))->onQueue('github issue');
 
         return response()->json([
             'status' => 'success',

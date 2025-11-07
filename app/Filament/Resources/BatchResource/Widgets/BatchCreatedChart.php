@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 
 class BatchCreatedChart extends ChartWidget
 {
-    protected static ?string $heading = 'نمودار ثبت دسته‌ها';
+    protected ?string $heading = 'نمودار ثبت دسته‌ها';
 
     protected function getData(): array
     {
