@@ -82,7 +82,7 @@ class BatchResource extends Resource
                         Repeater::make('watering_dates')
                             ->translateLabel()
                             ->defaultItems(7)
-                            ->default(Batch::calculateDates(type: 'water', period: 5))
+                            ->default(Batch::calculateDates(type: 'water', period: 7))
                             ->reorderable(false)
                             ->deletable(false)
                             ->collapsible()
@@ -115,7 +115,7 @@ class BatchResource extends Resource
                             ->collapsed()
                             ->itemLabel(fn($state) => verta($state['date'])->format('d F Y'))
                             ->translateLabel()
-                            ->default(Batch::calculateDates(type: 'fertilize',period: 3, interval: 10))
+                            ->default(Batch::calculateDates(type: 'fertilize',period: 3, interval: 20))
                             ->schema([
                                 Forms\Components\DatePicker::make('date')
                                     ->translateLabel()
