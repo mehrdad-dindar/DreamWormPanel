@@ -16,11 +16,14 @@
         "laravel-notification-channels/telegram": "^6.0",
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.0",
+        "laravel/slack-notification-channel": "^3.6",
         "laravel/tinker": "^2.10.1",
         "livewire/flux": "^2.1.1",
         "livewire/volt": "^1.7.0",
         "marjose123/filament-lockscreen": "^2.6",
-        "mokhosh/filament-jalali": "v4.10.0"
+        "mokhosh/filament-jalali": "v4.10.0",
+        "spatie/laravel-backup": "^9.3",
+        "ext-zip": "*"
     },
     "require-dev": {
         "roave/security-advisories": "dev-latest"
