@@ -12,4 +12,4 @@ Schedule::command("dreamworm:send-follow-up-sms")->dailyAt("10:00");
 Schedule::command('reminder:send')->dailyAt('18:00');
 
 Schedule::command('backup:clean')->dailyAt('1:00');
-Schedule::command('backup:run')->dailyAt('01:30');
+Schedule::command('backup:run --only-db')->dailyAt('01:30');

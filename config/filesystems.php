@@ -67,15 +67,6 @@ return [
             'visibility' => 'public',
         ],
 
-        'backup' => [
-            'driver' => 'local',
-            'root' => public_path('backups'),
-            'url' => env('APP_URL').'/backups',
-            'visibility' => 'public',
-            'throw' => false,
-            'report' => false,
-        ],
-
     ],
 
     /*
