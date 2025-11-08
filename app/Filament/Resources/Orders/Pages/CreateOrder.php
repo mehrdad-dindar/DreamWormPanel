@@ -1,17 +1,16 @@
 <?php
 
-namespace App\Filament\Resources\OrderResource\Pages;
+namespace App\Filament\Resources\Orders\Pages;
 
-use Illuminate\Database\Eloquent\Model;
 use App\Events\OrderCreated;
-use App\Filament\Resources\OrderResource;
-use App\Models\User;
+use App\Filament\Resources\Orders\OrderResource;
 use App\Notifications\NewOrderPlaced;
-use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Notification;
-use JetBrains\PhpStorm\NoReturn;
 use Spatie\Permission\Models\Role;
+
 
 class CreateOrder extends CreateRecord
 {
