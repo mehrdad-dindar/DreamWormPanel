@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use Exception;
+use Illuminate\Database\Eloquent\Model;
 use Log;
 use App\Models\BugReport;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -14,12 +15,12 @@ use NotificationChannels\Telegram\TelegramMessage;
 class SendBugReportToGitHub implements ShouldQueue
 {
     use Queueable;
-    public BugReport $report;
+    public Model|BugReport $report;
 
     /**
      * Create a new job instance.
      */
-    public function __construct(BugReport $bug)
+    public function __construct(Model|BugReport $bug)
     {
         $this->report = $bug;
     }

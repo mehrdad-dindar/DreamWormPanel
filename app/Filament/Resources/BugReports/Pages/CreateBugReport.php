@@ -1,16 +1,18 @@
 <?php
 
-namespace App\Filament\Resources\BugReportResource\Pages;
+namespace App\Filament\Resources\BugReports\Pages;
 
-use App\Filament\Resources\BugReportResource;
+use App\Filament\Resources\BugReports\BugReportResource;
 use App\Jobs\SendBugReportToGitHub;
-use Filament\Actions;
+use App\Models\BugReport;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Database\Eloquent\Model;
 
 class CreateBugReport extends CreateRecord
 {
     protected static string $resource = BugReportResource::class;
+
 
     protected function afterCreate(): void
     {
@@ -21,10 +23,5 @@ class CreateBugReport extends CreateRecord
         Notification::make()
             ->body("گزارش باگ ثبت و به GitHub ارسال شد ✅")
             ->success();
-    }
-
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('index');
     }
 }
