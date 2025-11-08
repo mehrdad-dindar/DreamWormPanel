@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\BatchResource\Pages;
+namespace App\Filament\Resources\Batches\Pages;
 
-use App\Filament\Resources\BatchResource;
-use Filament\Actions;
+use App\Filament\Resources\Batches\BatchResource;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateBatch extends CreateRecord

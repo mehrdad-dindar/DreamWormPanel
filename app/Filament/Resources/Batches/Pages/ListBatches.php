@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Filament\Resources\BatchResource\Pages;
+namespace App\Filament\Resources\Batches\Pages;
 
+use App\Filament\Resources\Batches\BatchResource;
+use App\Filament\Resources\Batches\Widgets\BatchesChart;
 use Filament\Actions\CreateAction;
-use App\Filament\Resources\BatchResource;
-use App\Filament\Resources\BatchResource\Widgets\BatchCreatedChart;
-use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
 class ListBatches extends ListRecords
@@ -22,7 +21,7 @@ class ListBatches extends ListRecords
     protected function getHeaderWidgets(): array
     {
         return [
-            BatchCreatedChart::class
+            BatchesChart::class
         ];
     }
 }

@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Filament\Resources\BatchResource\Widgets;
+namespace App\Filament\Resources\Batches\Widgets;
 
 use App\Models\Batch;
 use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
-use Illuminate\Support\Facades\DB;
 
-class BatchCreatedChart extends ChartWidget
+class BatchesChart extends ChartWidget
 {
     protected ?string $heading = 'نمودار ثبت دسته‌ها';
 
@@ -31,7 +30,6 @@ class BatchCreatedChart extends ChartWidget
             ],
             'labels' => $labels,
         ];
-
     }
 
     protected function getType(): string
