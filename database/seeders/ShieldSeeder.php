@@ -2,11 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\Role;
 use Illuminate\Database\Seeder;
 use BezhanSalleh\FilamentShield\Support\Utils;
-use Illuminate\Support\Facades\Artisan;
-use Spatie\Permission\Models\Permission;
 use Spatie\Permission\PermissionRegistrar;
 
 class ShieldSeeder extends Seeder
@@ -14,9 +11,8 @@ class ShieldSeeder extends Seeder
     public function run(): void
     {
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
-        Artisan::call('shield:generate --all --panel=admin');
 
-        $rolesWithPermissions = '[{"name":"super_admin","guard_name":"web","permissions":[]},{"name":"panel_user","guard_name":"web","permissions":[]},{"name":"customer","guard_name":"web","permissions":[]}]';
+        $rolesWithPermissions = '[{"name":"super_admin","guard_name":"web","permissions":["ViewAny:Batch","View:Batch","Create:Batch","Update:Batch","Delete:Batch","Restore:Batch","ForceDelete:Batch","ForceDeleteAny:Batch","RestoreAny:Batch","Replicate:Batch","Reorder:Batch","ViewAny:BugReport","View:BugReport","Create:BugReport","Update:BugReport","Delete:BugReport","Restore:BugReport","ForceDelete:BugReport","ForceDeleteAny:BugReport","RestoreAny:BugReport","Replicate:BugReport","Reorder:BugReport","ViewAny:Order","View:Order","Create:Order","Update:Order","Delete:Order","Restore:Order","ForceDelete:Order","ForceDeleteAny:Order","RestoreAny:Order","Replicate:Order","Reorder:Order","ViewAny:Product","View:Product","Create:Product","Update:Product","Delete:Product","Restore:Product","ForceDelete:Product","ForceDeleteAny:Product","RestoreAny:Product","Replicate:Product","Reorder:Product","ViewAny:Transaction","View:Transaction","Create:Transaction","Update:Transaction","Delete:Transaction","Restore:Transaction","ForceDelete:Transaction","ForceDeleteAny:Transaction","RestoreAny:Transaction","Replicate:Transaction","Reorder:Transaction","ViewAny:User","View:User","Create:User","Update:User","Delete:User","Restore:User","ForceDelete:User","ForceDeleteAny:User","RestoreAny:User","Replicate:User","Reorder:User","ViewAny:WorkSession","View:WorkSession","Create:WorkSession","Update:WorkSession","Delete:WorkSession","Restore:WorkSession","ForceDelete:WorkSession","ForceDeleteAny:WorkSession","RestoreAny:WorkSession","Replicate:WorkSession","Reorder:WorkSession","ViewAny:Role","View:Role","Create:Role","Update:Role","Delete:Role","Restore:Role","ForceDelete:Role","ForceDeleteAny:Role","RestoreAny:Role","Replicate:Role","Reorder:Role","View:EditProfilePage"]}]';
         $directPermissions = '[]';
 
         static::makeRolesWithPermissions($rolesWithPermissions);
