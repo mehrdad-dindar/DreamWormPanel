@@ -10,6 +10,7 @@
         "ext-zip": "*",
         "bezhansalleh/filament-shield": "*",
         "filament/filament": "^4.0",
+        "filament/spatie-laravel-media-library-plugin": "^4.0",
         "hekmatinasser/verta": "^8.5",
         "ippanelcom/laravel-sdk": "^1.0.5",
         "joaopaulolndev/filament-edit-profile": "^2.0",
@@ -23,6 +24,7 @@
         "marjose123/filament-lockscreen": "^3.1",
         "mokhosh/filament-jalali": "^5.0",
         "spatie/laravel-backup": "^9.3",
+        "spatie/laravel-medialibrary": "^11.17",
         "spatie/laravel-permission": "^6.23",
         "tonegabes/filament-phosphor-icons": "^1.2"
     },
