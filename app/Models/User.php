@@ -81,7 +81,7 @@ class User extends Authenticatable implements HasMedia, HasAvatar
 
     public function getFilamentAvatarUrl(): ?string
     {
-        return $this->getMedia('avatars')->first()->getFullUrl();
+        return $this->getMedia('avatars')->first()?->getFullUrl();
     }
 
 

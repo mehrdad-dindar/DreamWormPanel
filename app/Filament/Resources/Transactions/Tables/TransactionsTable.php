@@ -6,6 +6,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -16,10 +17,11 @@ class TransactionsTable
         return $table
             ->defaultSort('created_at', 'desc')
             ->columns([
-                ImageColumn::make('user.avatar_url')
+                SpatieMediaLibraryImageColumn::make('user.avatar_url')
                     ->label(' ')
                     ->width(40)
                     ->circular()
+                    ->collection('avatars')
                     ->defaultImageUrl(fn ($record): string => 'https://ui-avatars.com/api/?name=' . $record->user->name . '&color=FFFFFF&background=09090b')
                     ->disk('avatar'),
                 TextColumn::make('user.name')
