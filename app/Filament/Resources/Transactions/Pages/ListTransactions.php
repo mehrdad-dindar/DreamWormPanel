@@ -1,20 +1,19 @@
 <?php
 
-namespace App\Filament\Resources\TransactionResource\Pages;
+namespace App\Filament\Resources\Transactions\Pages;
 
-use Filament\Schemas\Components\Tabs\Tab;
+use App\Filament\Resources\Transactions\TransactionResource;
+use App\Filament\Resources\Transactions\Widgets\MonthlyExpenseChart;
+use App\Filament\Resources\Transactions\Widgets\MonthlyIncomeChart;
 use Filament\Actions\CreateAction;
-use App\Filament\Resources\TransactionResource;
-use App\Filament\Resources\TransactionResource\Widgets\MonthlyExpenseChart;
-use App\Filament\Resources\TransactionResource\Widgets\MonthlyIncomeChart;
-use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Schemas\Schema;
 
 class ListTransactions extends ListRecords
 {
     protected static string $resource = TransactionResource::class;
 
-    protected function getHeaderWidgets(): array
+    /*protected function getHeaderWidgets(): array
     {
         return [
             MonthlyExpenseChart::class,
@@ -33,13 +32,21 @@ class ListTransactions extends ListRecords
                 ->label(__('expense'))
                 ->query(fn ($query) => $query->whereType(false)),
         ];
-    }
+    }*/
 
 
     protected function getHeaderActions(): array
     {
         return [
             CreateAction::make(),
+        ];
+    }
+
+    public function getHeaderWidgets(): array
+    {
+        return [
+            MonthlyIncomeChart::class,
+            MonthlyExpenseChart::class
         ];
     }
 }

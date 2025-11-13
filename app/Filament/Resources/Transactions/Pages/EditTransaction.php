@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Filament\Resources\TransactionResource\Pages;
+namespace App\Filament\Resources\Transactions\Pages;
 
+use App\Filament\Resources\Transactions\TransactionResource;
 use Filament\Actions\DeleteAction;
-use App\Filament\Resources\TransactionResource;
-use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
 class EditTransaction extends EditRecord
