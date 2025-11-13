@@ -45,36 +45,7 @@ class UserResource extends Resource
     {
         return $schema
             ->components([
-                TextInput::make('name')
-                    ->translateLabel()
-                    ->required()
-                    ->maxLength(255),
-                TextInput::make('phone')
-                    ->translateLabel()
-                    ->tel()
-                    ->reactive()
-                    ->live()
-                    ->required()
-                    ->maxLength(255),
-                TextInput::make('email')
-                    ->translateLabel()
-                    ->email()
-                    ->live()
-                    ->reactive()
-                    ->required(fn(Get $get) => is_null($get('phone')))
-                    ->maxLength(255),
-                DateTimePicker::make('email_verified_at'),
-                TextInput::make('password')
-                    ->translateLabel()
-                    ->password()
-                    ->required()
-                    ->maxLength(255),
-                Select::make('roles')
-                    ->translateLabel()
-                    ->relationship('roles', 'name')
-                    ->multiple()
-                    ->preload()
-                    ->searchable(),
+
 
             ]);
     }
