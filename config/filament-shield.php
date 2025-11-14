@@ -163,6 +163,9 @@ return [
     'resources' => [
         'subject' => 'model',
         'manage' => [
+            \App\Filament\Resources\Users\UserResource::class => [
+                'call'
+            ],
             \BezhanSalleh\FilamentShield\Resources\Roles\RoleResource::class => [
                 'viewAny',
                 'view',
