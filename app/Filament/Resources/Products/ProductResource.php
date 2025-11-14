@@ -21,7 +21,9 @@ class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Phosphor::BarcodeDuotone;
+    protected static string|BackedEnum|null $navigationIcon = Phosphor::BarcodeThin;
+    protected static string|BackedEnum|null $activeNavigationIcon = Phosphor::BarcodeDuotone;
+
     protected static ?string $navigationLabel = 'محصولات';
     protected static ?string $breadcrumb = 'محصولات';
     protected static ?string $pluralModelLabel = 'محصولات';

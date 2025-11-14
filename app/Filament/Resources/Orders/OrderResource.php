@@ -19,7 +19,9 @@ class OrderResource extends Resource
 {
     protected static ?string $model = Order::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Phosphor::StorefrontDuotone;
+    protected static string|BackedEnum|null $navigationIcon = Phosphor::StorefrontThin;
+    protected static string|BackedEnum|null $activeNavigationIcon = Phosphor::StorefrontDuotone;
+
     protected static ?string $navigationLabel = 'سفارشات';
     protected static ?string $breadcrumb = 'سفارشات';
     protected static ?string $pluralModelLabel = 'سفارشات';

@@ -21,7 +21,7 @@ class TransactionResource extends Resource
 {
     protected static ?string $model = Transaction::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Phosphor::CashRegisterDuotone;
+    protected static string|BackedEnum|null $navigationIcon = Phosphor::CashRegisterThin;
     protected static string | \BackedEnum | null $activeNavigationIcon = Phosphor::CashRegisterDuotone;
     protected static ?string $navigationLabel = 'تراکنش ها';
     protected static ?string $breadcrumb = 'تراکنش ها';

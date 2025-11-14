@@ -22,8 +22,8 @@ class UserResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = User::class;
 
-    protected static string |BackedEnum | null $navigationIcon = Phosphor::UsersFourDuotone;
-    protected static string | \BackedEnum | null $activeNavigationIcon = Phosphor::UsersFourBold;
+    protected static string |BackedEnum | null $navigationIcon = Phosphor::UsersFourThin;
+    protected static string | \BackedEnum | null $activeNavigationIcon = Phosphor::UsersFourDuotone;
     protected static ?string $navigationLabel = 'کاربران';
     protected static ?string $breadcrumb = 'کاربران';
     protected static ?string $pluralModelLabel = 'کاربران';
