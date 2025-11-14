@@ -42,19 +42,19 @@ class SendDailyReminder extends Command
         foreach ($batches as $batch) {
             // استخراج تاریخ‌های آب‌پاشی
             $wateringDates = collect($batch->watering_dates)->pluck('date')->toArray();
-            if (in_array($tomorrow, $wateringDates)) {
+            if (in_array($tomorrow, $wateringDates, true)) {
                 $wateringBatches[] = $batch->batch_number;
             }
 
             // استخراج تاریخ‌های خوراک‌دهی
             $feedingDates = collect($batch->feeding_dates)->pluck('date')->toArray();
-            if (in_array($tomorrow, $feedingDates)) {
+            if (in_array($tomorrow, $feedingDates, true)) {
                 $feedingBatches[] = $batch->batch_number;
             }
 
             // استخراج تاریخ‌های کودگیری
             $fertilizingDates = collect($batch->fertilization_dates)->pluck('date')->toArray();
-            if (in_array($tomorrow, $fertilizingDates)) {
+            if (in_array($tomorrow, $fertilizingDates, true)) {
                 $fertilizingBatches[] = $batch->batch_number;
             }
         }
@@ -73,7 +73,9 @@ class SendDailyReminder extends Command
         $message .= "امور مربوط به فردا " . verta($tomorrow)->format('l j F Y') . "\n\n";
 
         if ($spawningReminder) {
-            $message .= "🥚🥚 تخم‌گیری:\nفردا زمان تخم‌گیری دسته جدید است\n\n";
+            $newBatchNumber = $latestBatch->batch_number + 1;
+            $message .= "🥚🥚 تخم‌گیری:\nفردا زمان تخم‌گیری دسته (جدید) *{$newBatchNumber}* است\n\n";
+            $message .= "⚠️ سبوس و خوراک تر برای حدود " . $latestBatch->actual_boxes + 2 . " باکس آماده کنید";
             $message .= "-----------------------\n\n";
         }
 

@@ -52,9 +52,9 @@ class BatchForm
                                 ->default(today())
                                 ->afterStateUpdated(function(Set $set,$state) {
                                     $set('expected_harvest_date', Carbon::parse($state)->addDays(70));
-                                    $set('watering_dates', Batch::calculateDates(type: 'water', start_at: $state, period: 5));
-                                    $set('feeding_dates', Batch::calculateDates(type: 'feed', start_at: $state, period: 14));
-                                    $set('fertilization_dates', Batch::calculateDates(type: 'fertilize', start_at: $state, period: 3, interval: 10));
+                                    $set('watering_dates', Batch::calculateDates(type: 'water', start_at: $state, period: 14,interval: 1));
+                                    $set('feeding_dates', Batch::calculateDates(type: 'feed', start_at: $state, period: 22, interval: 2));
+                                    $set('fertilization_dates', Batch::calculateDates(type: 'fertilize', start_at: $state, period: 2, interval: 20));
                                 })
                                 ->jalali()
                                 ->required(),
@@ -67,13 +67,13 @@ class BatchForm
                                 ->translateLabel(),
                         ]),
                     Section::make('تاریخ‌های عملیات')
-//                        ->columns(3)
+                        ->columns(3)
                         ->description('تاریخ‌های عملیات‌هایی مثل آبپاشی، خوراک‌دهی و کودگیری در این بخش به صورت خودکار محاسبه شده و قابل ویرایش هستند.')
                         ->schema([
                             Repeater::make('watering_dates')
                                 ->translateLabel()
                                 ->defaultItems(7)
-                                ->default(Batch::calculateDates(type: 'water', period: 7))
+                                ->default(Batch::calculateDates(type: 'water', period: 14,interval: 1))
                                 ->reorderable(false)
                                 ->deletable(false)
                                 ->collapsible()
@@ -92,7 +92,7 @@ class BatchForm
                                 ->collapsed()
                                 ->itemLabel(fn($state) => verta($state['date'])->format('d F Y'))
                                 ->translateLabel()
-                                ->default(Batch::calculateDates(type: 'feed',period: 14))
+                                ->default(Batch::calculateDates(type: 'feed',period: 22,interval: 2))
                                 ->schema([
                                     DatePicker::make('date')
                                         ->translateLabel()
@@ -106,7 +106,7 @@ class BatchForm
                                 ->collapsed()
                                 ->itemLabel(fn($state) => verta($state['date'])->format('d F Y'))
                                 ->translateLabel()
-                                ->default(Batch::calculateDates(type: 'fertilize',period: 3, interval: 20))
+                                ->default(Batch::calculateDates(type: 'fertilize',period: 2, interval: 20))
                                 ->schema([
                                     DatePicker::make('date')
                                         ->translateLabel()
