@@ -16,6 +16,7 @@ class OrdersTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 TextColumn::make('customer.name')
                     ->translateLabel()
@@ -33,7 +34,7 @@ class OrdersTable
                     ->sortable(),
                 TextColumn::make('deliver_type')
                     ->translateLabel()
-                    ->getStateUsing(function ($record){
+                    ->getStateUsing(function ($record) {
                         if ($record->deliver_type) {
                             return 'تحویل درب کارگاه';
                         }
@@ -62,19 +63,19 @@ class OrdersTable
                                     ]),
                             ])
                             ->modalWidth('sm')
-                            ->action(function (array $data,Order $record) {
+                            ->action(function (array $data, Order $record) {
                                 $record->update($data);
                             })
                     )
                     ->badge()
-                    ->icon(fn($state) => "heroicon-o-". match ($state) {
+                    ->icon(fn($state) => "heroicon-o-" . match ($state) {
                             'pending' => 'clock',
                             'processing' => 'arrow-path',
                             'completed' => 'check-circle',
                             default => 'x-circle'
                         })
                     ->formatStateUsing(fn($state) => __('status.' . $state))
-                    ->color(fn($state) => match ($state){
+                    ->color(fn($state) => match ($state) {
                         'pending' => 'warning',
                         'processing' => 'info',
                         'completed' => 'success',
@@ -100,7 +101,7 @@ class OrdersTable
                     ->button()
                     ->color('success')
                     ->icon('heroicon-s-phone')
-                    ->url(fn($record) => 'tel:+98'. (int)$record->customer->phone)
+                    ->url(fn($record) => 'tel:+98' . (int)$record->customer->phone)
                     ->translateLabel(),
                 EditAction::make(),
             ])
