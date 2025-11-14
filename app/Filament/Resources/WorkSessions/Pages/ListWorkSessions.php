@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Filament\Resources\WorkSessionResource\Pages;
+namespace App\Filament\Resources\WorkSessions\Pages;
 
+use App\Filament\Resources\WorkSessions\Widgets\WorkSessionChart;
+use App\Filament\Resources\WorkSessions\WorkSessionResource;
 use Filament\Actions\CreateAction;
-use App\Filament\Resources\WorkSessionResource;
-use App\Filament\Resources\WorkSessionResource\Widgets\WorkSessionChart;
-use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
 class ListWorkSessions extends ListRecords

@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Filament\Resources\WorkSessionResource\Pages;
+namespace App\Filament\Resources\WorkSessions\Pages;
 
-use App\Filament\Resources\WorkSessionResource;
+use App\Filament\Resources\WorkSessions\WorkSessionResource;
 use Carbon\Carbon;
-use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateWorkSession extends CreateRecord

@@ -1,17 +1,23 @@
 <?php
 
-namespace App\Filament\Resources\WorkSessionResource\Widgets;
+namespace App\Filament\Resources\WorkSessions\Widgets;
 
 use App\Models\User;
 use App\Models\WorkSession;
 use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Contracts\Support\Htmlable;
 
 class WorkSessionChart extends ChartWidget
 {
+
     protected ?string $heading = 'نمودار ساعت‌های کارکرد ماه جاری';
-    protected ?string $description = null;
+    protected ?string $total = null;
+
+    public function getDescription(): string|Htmlable|null
+    {
+        return "مجموع کارکرد ماه کارگاه: ". $this->total;
+    }
 
     protected function getData(): array
     {
@@ -23,7 +29,7 @@ class WorkSessionChart extends ChartWidget
             ->whereNotNull('end_time')
             ->get();
 
-        $total = intval(collect($sessions)->sum(fn ($item) => Carbon::parse($item->start_time)->diffInMinutes($item->end_time)));
+        $this->total = sumHours($sessions);
 
         // تاریخ‌های ماه جاری
         $days = [];
@@ -66,8 +72,6 @@ class WorkSessionChart extends ChartWidget
             ];
         }
 
-        self::$description = "مجموع کارکرد ماه کارگاه: ". $this->getTotalToClock($total);
-
         return [
             'labels' => array_values($days),
             'datasets' => $datasets,
@@ -92,9 +96,10 @@ class WorkSessionChart extends ChartWidget
         return 'bar';
     }
 
-    private function getTotalToClock(int $total)
+    private function getTotalToClock(int $total): string
     {
-        $hour = intval($total / 60);
+        dd($this->total);
+        $hour = (int)($total / 60);
         $minutes = $total % 60;
         return $hour.' ساعت و '.$minutes.' دقیقه';
     }
