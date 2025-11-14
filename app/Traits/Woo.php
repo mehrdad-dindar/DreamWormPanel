@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use Exception;
 use App\Models\Product;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Http;
@@ -43,7 +44,7 @@ trait Woo
                     'message' => $response->json('message')
                 ];
             }
-        }catch (\Exception $e){
+        }catch (Exception $e){
             Notification::make()
                 ->danger()
                 ->title($e->getCode())

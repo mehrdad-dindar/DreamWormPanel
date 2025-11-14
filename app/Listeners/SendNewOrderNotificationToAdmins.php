@@ -2,6 +2,8 @@
 
 namespace App\Listeners;
 
+use Exception;
+use Log;
 use App\Events\OrderCreated;
 use App\Services\N8nTelegram;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -49,8 +51,8 @@ class SendNewOrderNotificationToAdmins
                 'text' => $message
             ]);
             info('Reminder sent successfully!');
-        } catch (\Exception $e) {
-            \Log::error('Failed to send N8nTelegram message: ' . $e->getMessage());
+        } catch (Exception $e) {
+            Log::error('Failed to send N8nTelegram message: ' . $e->getMessage());
             warning('Failed to send N8nTelegram message: ' . $e->getMessage());
         }
     }

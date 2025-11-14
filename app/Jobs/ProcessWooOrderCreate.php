@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use Throwable;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
@@ -47,7 +48,7 @@ class ProcessWooOrderCreate implements ShouldQueue
                 default:
                     Log::info('Unhandled Woo topic', ['topic' => $this->topic]);
             }
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             Log::error('Error processing Woo webhook', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),

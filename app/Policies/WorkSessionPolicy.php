@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Policies;
 
-use App\Models\User;
+use Illuminate\Foundation\Auth\User as AuthUser;
 use App\Models\WorkSession;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -10,99 +12,65 @@ class WorkSessionPolicy
 {
     use HandlesAuthorization;
 
-    /**
-     * Determine whether the user can view any models.
-     */
-    public function viewAny(User $user): bool
+    public function viewAny(AuthUser $authUser): bool
     {
-        return $user->can('view_any_work::session');
+        return $authUser->can('ViewAny:WorkSession');
     }
 
-    /**
-     * Determine whether the user can view the model.
-     */
-    public function view(User $user, WorkSession $workSession): bool
+    public function view(AuthUser $authUser, WorkSession $workSession): bool
     {
-        return $user->can('view_work::session');
+        return $authUser->can('View:WorkSession');
     }
 
-    /**
-     * Determine whether the user can create models.
-     */
-    public function create(User $user): bool
+    public function create(AuthUser $authUser): bool
     {
-        return $user->can('create_work::session');
+        return $authUser->can('Create:WorkSession');
     }
 
-    /**
-     * Determine whether the user can update the model.
-     */
-    public function update(User $user, WorkSession $workSession): bool
+    public function update(AuthUser $authUser, WorkSession $workSession): bool
     {
-        return $user->can('update_work::session');
+        if ($authUser->hasRole('super_admin')) {
+            return true;
+        }
+        return $authUser->can('Update:WorkSession') && $authUser->id === $workSession->user_id;
     }
 
-    /**
-     * Determine whether the user can delete the model.
-     */
-    public function delete(User $user, WorkSession $workSession): bool
+    public function delete(AuthUser $authUser, WorkSession $workSession): bool
     {
-        return $user->can('delete_work::session');
+        if ($authUser->hasRole('super_admin')) {
+            return true;
+        }
+        return $authUser->can('Delete:WorkSession') && $authUser->id === $workSession->user_id;
     }
 
-    /**
-     * Determine whether the user can bulk delete.
-     */
-    public function deleteAny(User $user): bool
+    public function restore(AuthUser $authUser, WorkSession $workSession): bool
     {
-        return $user->can('delete_any_work::session');
+        return $authUser->can('Restore:WorkSession');
     }
 
-    /**
-     * Determine whether the user can permanently delete.
-     */
-    public function forceDelete(User $user, WorkSession $workSession): bool
+    public function forceDelete(AuthUser $authUser, WorkSession $workSession): bool
     {
-        return $user->can('force_delete_work::session');
+        return $authUser->can('ForceDelete:WorkSession');
     }
 
-    /**
-     * Determine whether the user can permanently bulk delete.
-     */
-    public function forceDeleteAny(User $user): bool
+    public function forceDeleteAny(AuthUser $authUser): bool
     {
-        return $user->can('force_delete_any_work::session');
+        return $authUser->can('ForceDeleteAny:WorkSession');
     }
 
-    /**
-     * Determine whether the user can restore.
-     */
-    public function restore(User $user, WorkSession $workSession): bool
+    public function restoreAny(AuthUser $authUser): bool
     {
-        return $user->can('restore_work::session');
+        return $authUser->can('RestoreAny:WorkSession');
     }
 
-    /**
-     * Determine whether the user can bulk restore.
-     */
-    public function restoreAny(User $user): bool
+    public function replicate(AuthUser $authUser, WorkSession $workSession): bool
     {
-        return $user->can('restore_any_work::session');
+        return $authUser->can('Replicate:WorkSession');
     }
 
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, WorkSession $workSession): bool
+    public function reorder(AuthUser $authUser): bool
     {
-        return $user->can('replicate_work::session');
+        return $authUser->can('Reorder:WorkSession');
     }
 
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_work::session');
-    }
 }

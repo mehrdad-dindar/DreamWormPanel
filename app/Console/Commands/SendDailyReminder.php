@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use Exception;
+use Log;
 use App\Models\Batch;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -118,8 +120,8 @@ class SendDailyReminder extends Command
                     }
                 });
             $this->info('Reminder sent successfully!');
-        } catch (\Exception $e) {
-            \Log::error('Failed to send Telegram message: ' . $e->getMessage());
+        } catch (Exception $e) {
+            Log::error('Failed to send Telegram message: ' . $e->getMessage());
             $this->error('Failed to send Telegram message: ' . $e->getMessage());
         }
     }

@@ -19,7 +19,7 @@ class Batch extends Model
         $addWeeks = match ($type){
             'water' => 2,
             'feed' => 4,
-            'fertilize' => 7,
+            'fertilize' => 6,
             default => 0
         };
         $dates = [];
