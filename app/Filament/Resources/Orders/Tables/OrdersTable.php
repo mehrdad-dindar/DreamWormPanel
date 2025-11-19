@@ -7,9 +7,18 @@ use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Illuminate\Database\Eloquent\Builder;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
+use Filament\Schemas\Components\Fieldset;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use pxlrbt\FilamentExcel\Actions\ExportBulkAction;
+use pxlrbt\FilamentExcel\Columns\Column;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
+use ToneGabes\Filament\Icons\Enums\Phosphor;
 
 class OrdersTable
 {
@@ -94,7 +103,57 @@ class OrdersTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('user')
+                    ->translateLabel()
+                    ->preload()
+                    ->optionsLimit(10)
+                    ->searchable()
+                    ->native(false)
+                    ->relationship('user', 'name'),
+                SelectFilter::make('customer')
+                    ->translateLabel()
+                    ->preload()
+                    ->optionsLimit(10)
+                    ->searchable()
+                    ->native(false)
+                    ->relationship('customer', 'name'),
+                SelectFilter::make('status')
+                    ->translateLabel()
+                    ->preload()
+                    ->optionsLimit(10)
+                    ->searchable()
+                    ->multiple()
+                    ->native(false)
+                    ->options([
+                        'pending' => __('status.pending'),
+                        'processing' => __('status.processing'),
+                        'completed' => __('status.completed'),
+                        'cancelled' => __('status.cancelled')
+                    ]),
+                Filter::make('created_at')
+                    ->schema([
+                        Fieldset::make('created_at')
+                            ->label(__('Date'))
+                            ->schema([
+                                DatePicker::make('created_from')
+                                    ->label(__('from date'))
+                                    ->jalali(),
+                                DatePicker::make('created_until')
+                                    ->label(__('until date'))
+                                    ->jalali(),
+                            ]),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            );
+                    }),
             ])
             ->recordActions([
                 Action::make('Call')
@@ -108,6 +167,36 @@ class OrdersTable
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
+                    ExportBulkAction::make()
+                        ->label(__("Export Report"))
+                        ->exports([
+                            ExcelExport::make("table")->withFilename(fn($resource) => verta()->format("Y_m_d_H_i_s_") . "Orders")
+                                ->askForWriterType()
+                                ->withColumns([
+                                    Column::make("user.name")
+                                        ->heading(__("Submitted By")),
+                                    Column::make("customer.name")
+                                        ->heading(__("Customer Name")),
+                                    Column::make("order_items")
+                                        ->heading(__("Order items"))
+                                        ->getStateUsing(fn($record) => $record->getOrderItems()),
+                                    Column::make("price")
+                                        ->heading(__("Amount"))
+                                        ->formatStateUsing(fn($state) => number_format($state) . " تومان"),
+                                    Column::make("status")
+                                        ->formatStateUsing(fn($state) => match ($state) {
+                                            'pending' => __('status.pending'),
+                                            'processing' => __('status.processing'),
+                                            'completed' => __('status.completed'),
+                                            'cancelled' => __('status.cancelled')
+                                        })
+                                        ->heading(__("Status")),
+                                    Column::make("created_at")
+                                        ->heading(__("Date"))
+                                        ->formatStateUsing(fn($state) => verta($state)->format("Y/m/d - H:i")),
+                                ]),
+                        ])
+                        ->icon(Phosphor::ExportDuotone),
                 ]),
             ]);
     }
