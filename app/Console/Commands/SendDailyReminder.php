@@ -10,7 +10,8 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Notification;
 use NotificationChannels\Telegram\TelegramMessage;
 
-class SendDailyReminder extends Command
+class
+SendDailyReminder extends Command
 {
     /**
      * The name and signature of the console command.
