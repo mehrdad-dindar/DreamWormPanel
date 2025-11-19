@@ -34,11 +34,7 @@ class FollowUpSmsManually extends Command
         $this->info("شروع ارسال پیامک از ردیف {$offset} تا " . ($offset + $limit - 1));
 
         // انتخاب مشتری‌های غیرتکراری (بر اساس آخرین سفارش هر مشتری)
-        $users = User::select('users.*')
-            ->join(DB::raw('(SELECT MAX(id) as last_order_id, user_id FROM orders GROUP BY user_id) as o'), function ($join) {
-                $join->on('users.id', '=', 'o.user_id');
-            })
-            ->orderBy('o.last_order_id', 'desc')
+        $users = User::orderBy('id', 'desc')
             ->skip($offset)
             ->take($limit)
             ->get();
