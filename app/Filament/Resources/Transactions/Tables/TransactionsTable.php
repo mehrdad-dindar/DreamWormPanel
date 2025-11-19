@@ -2,13 +2,22 @@
 
 namespace App\Filament\Resources\Transactions\Tables;
 
+use App\Models\Transaction;
+use App\Models\User;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\DatePicker;
+use Filament\Schemas\Components\Fieldset;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Malzariey\FilamentDaterangepickerFilter\Fields\DateRangePicker;
+use Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter;
 use pxlrbt\FilamentExcel\Actions\ExportBulkAction;
 use pxlrbt\FilamentExcel\Columns\Column;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
@@ -26,7 +35,7 @@ class TransactionsTable
                     ->width(40)
                     ->circular()
                     ->collection('avatars')
-                    ->defaultImageUrl(fn ($record): string => 'https://ui-avatars.com/api/?name=' . $record->user->name . '&color=FFFFFF&background=09090b')
+                    ->defaultImageUrl(fn($record): string => 'https://ui-avatars.com/api/?name=' . $record->user->name . '&color=FFFFFF&background=09090b')
                     ->disk('avatar'),
                 TextColumn::make('user.name')
                     ->translateLabel()
@@ -34,7 +43,10 @@ class TransactionsTable
                     ->sortable(),
                 TextColumn::make('type')
                     ->translateLabel()
-                    ->formatStateUsing(fn($state) => match ((int)$state) {0 => __('expense'), 1 => __('income')})
+                    ->formatStateUsing(fn($state) => match ((int)$state) {
+                        0 => __('expense'),
+                        1 => __('income')
+                    })
                     ->color(fn($record) => $record->type ? 'success' : 'danger')
                     ->badge(),
                 TextColumn::make('amount')
@@ -58,7 +70,56 @@ class TransactionsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('user')
+                    ->translateLabel()
+                    ->relationship('user', 'name'),
+                SelectFilter::make('type')
+                    ->translateLabel()
+                    ->options([
+                        0 => __("expense"),
+                        1 => __("income")
+                    ]),
+                SelectFilter::make('category')
+                        ->multiple()
+                        ->preload()
+                        ->options(function () {
+                            return array_filter(Transaction::distinct()
+                                ->orderBy('category')
+                                ->pluck('category', 'category')
+                                ->toArray());
+                        })
+                        ->query(function ($query, $state) {
+                            if (! $state['values']) {
+                                return $query;
+                            }
+
+                            return $query->whereIn('category', $state['values']);
+                        })
+                    ->translateLabel(),
+                Filter::make('created_at')
+                    ->schema([
+                        Fieldset::make('created_at')
+                            ->label(__('Date'))
+                            ->schema([
+                                DatePicker::make('created_from')
+                                    ->label(__('from date'))
+                                    ->jalali(),
+                                DatePicker::make('created_until')
+                                    ->label(__('until date'))
+                                    ->jalali(),
+                            ]),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            );
+                    }),
             ])
             ->recordActions([
                 EditAction::make(),
@@ -69,16 +130,19 @@ class TransactionsTable
                     ExportBulkAction::make()
                         ->label(__("Export Report"))
                         ->exports([
-                            ExcelExport::make("table")->withFilename(fn($resource) => verta()->format("Y_m_d_H_i_s_")."transactions")
+                            ExcelExport::make("table")->withFilename(fn($resource) => verta()->format("Y_m_d_H_i_s_") . "transactions")
                                 ->withColumns([
                                     Column::make("user.name")
                                         ->heading(__("User")),
                                     Column::make("type")
                                         ->heading(__("Type"))
-                                        ->formatStateUsing(fn($state) => match ($state) {0 => __('expense'), 1 => __('income')}),
+                                        ->formatStateUsing(fn($state) => match ($state) {
+                                            0 => __('expense'),
+                                            1 => __('income')
+                                        }),
                                     Column::make("amount")
                                         ->heading(__("Amount"))
-                                        ->formatStateUsing(fn($state) => number_format($state). " تومان"),
+                                        ->formatStateUsing(fn($state) => number_format($state) . " تومان"),
                                     Column::make("category")
                                         ->heading(__("Category")),
                                     Column::make("created_at")
