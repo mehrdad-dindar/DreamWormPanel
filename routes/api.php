@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BugReportController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
@@ -24,4 +25,5 @@ Route::prefix('v1')->group(function () {
             Route::post('store', [OrderController::class, 'storeWebhooks']);
         });
     });
+    Route::post('reportBug', [BugReportController::class, 'store'])->name('reportBug');
 });

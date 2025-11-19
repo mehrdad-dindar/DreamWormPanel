@@ -2,8 +2,9 @@
 
 namespace App\Providers\Filament;
 
-use Althinect\FilamentSpatieRolesPermissions\FilamentSpatieRolesPermissionsPlugin;
+use Filament\Pages\Dashboard;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
+use Filament\Widgets\AccountWidget;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -14,7 +15,6 @@ use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Widgets;
-use FilamentWebpush\FilamentWebpushPlugin;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -24,7 +24,6 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
 use Joaopaulolndev\FilamentEditProfile\Pages\EditProfilePage;
 use lockscreen\FilamentLockscreen\Http\Middleware\Locker;
-use lockscreen\FilamentLockscreen\Http\Middleware\LockerTimer;
 use lockscreen\FilamentLockscreen\Lockscreen;
 
 class AdminPanelProvider extends PanelProvider
@@ -41,14 +40,16 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
+            ->sidebarCollapsibleOnDesktop()
+            ->resourceCreatePageRedirect('index')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
-                Pages\Dashboard::class,
+                Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
+                AccountWidget::class,
 //                Widgets\FilamentInfoWidget::class,
             ])
             ->userMenuItems([
@@ -58,15 +59,6 @@ class AdminPanelProvider extends PanelProvider
                     ->icon('heroicon-m-user-circle')
             ])
             ->plugins([
-                FilamentWebpushPlugin::make()
-                    ->registerSubscriptionStatsWidget(),
-                FilamentEditProfilePlugin::make()
-                    ->shouldRegisterNavigation(false)
-                    ->shouldShowEmailForm()
-                    ->shouldShowDeleteAccountForm(false)
-                    ->shouldShowSanctumTokens()
-                    ->shouldShowBrowserSessionsForm()
-                    ->shouldShowAvatarForm(),
                 FilamentShieldPlugin::make()
                     ->gridColumns([
                         'default' => 1,
@@ -83,7 +75,16 @@ class AdminPanelProvider extends PanelProvider
                         'default' => 1,
                         'sm' => 2,
                     ]),
+                FilamentEditProfilePlugin::make()
+                    ->shouldRegisterNavigation(false)
+                    ->shouldShowEmailForm()
+                    ->shouldShowDeleteAccountForm(false)
+                    ->shouldShowSanctumTokens()
+                    ->shouldShowBrowserSessionsForm()
+                    ->shouldShowAvatarForm(),
                 Lockscreen::make()
+                    ->enableIdleTimeout()
+                    ->enablePlugin()
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -95,7 +96,6 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
-                LockerTimer::class
             ])
             ->authMiddleware([
                 Authenticate::class,

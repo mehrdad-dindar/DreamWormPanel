@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendBugReportToGitHub;
 use App\Models\BugReport;
 use Illuminate\Http\Request;
 
@@ -9,21 +10,19 @@ class BugReportController extends Controller
 {
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string|min:10',
-        ]);
-
         $bug = BugReport::create([
-            'user_id' => auth()->id() || 1,
-            'title' => $validated['title'],
-            'description' => $validated['description'],
+            'user_id' => auth()?->id() || 1,
+            'title' => $request['data']['input_text'],
+            'description' => $request['data']['description'],
         ]);
 
         // Dispatch job for async handling
-        dispatch(new \App\Jobs\SendBugReportToGitHub($bug))->onQueue('github issue');
+        dispatch(new SendBugReportToGitHub($bug))->onQueue('github issue');
 
-        return back()->with('success', "گزارش شما با شناسه #{$bug->id} ثبت شد و بررسی خواهد شد 🙏");
+        return response()->json([
+            'status' => 'success',
+            'message' => 'success', "گزارش شما با شناسه #{$bug->id} ثبت شد و بررسی خواهد شد 🙏"
+        ]);
     }
 
 }

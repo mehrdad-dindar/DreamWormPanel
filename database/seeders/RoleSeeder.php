@@ -14,14 +14,12 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
-        $role = Role::create([
-           "name" => "super_admin",
-           "guard_name" => "web",
-        ]);
-
-        $role->syncPermissions(Permission::all());
         Role::create([
             "name" => "customer",
+            "guard_name" => "web",
+        ]);
+        Role::create([
+            "name" => "panel_user",
             "guard_name" => "web",
         ]);
     }

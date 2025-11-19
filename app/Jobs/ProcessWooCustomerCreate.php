@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use Throwable;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -47,7 +48,7 @@ class ProcessWooCustomerCreate implements ShouldQueue
                 default:
                     Log::info('Unhandled Woo topic', ['topic' => $this->topic]);
             }
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             Log::error('Error processing Woo webhook', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
@@ -131,7 +132,7 @@ class ProcessWooCustomerCreate implements ShouldQueue
                     // سپس در مدل product ذخیره یا attach کن (بسته به طراحی مدلت)
                     // مثال: $product->images()->create(['path' => $filename]);
                 }
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 Log::warning('Failed to fetch product image', ['src' => $src, 'error' => $e->getMessage()]);
             }
         }
