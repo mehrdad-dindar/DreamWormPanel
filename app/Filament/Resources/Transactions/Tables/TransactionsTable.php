@@ -9,6 +9,10 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use pxlrbt\FilamentExcel\Actions\ExportBulkAction;
+use pxlrbt\FilamentExcel\Columns\Column;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
+use ToneGabes\Filament\Icons\Enums\Phosphor;
 
 class TransactionsTable
 {
@@ -62,6 +66,29 @@ class TransactionsTable
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
+                    ExportBulkAction::make()
+                        ->label(__("Export Report"))
+                        ->exports([
+                            ExcelExport::make("table")->withFilename(fn($resource) => verta()->format("Y_m_d_H_i_s_")."transactions")
+                                ->withColumns([
+                                    Column::make("user.name")
+                                        ->heading(__("User")),
+                                    Column::make("type")
+                                        ->heading(__("Type"))
+                                        ->formatStateUsing(fn($state) => match ($state) {0 => __('expense'), 1 => __('income')}),
+                                    Column::make("amount")
+                                        ->heading(__("Amount"))
+                                        ->formatStateUsing(fn($state) => number_format($state). " تومان"),
+                                    Column::make("category")
+                                        ->heading(__("Category")),
+                                    Column::make("created_at")
+                                        ->heading(__("Date"))
+                                        ->formatStateUsing(fn($state) => verta($state)->format("Y/m/d - H:i")),
+                                    Column::make("description")
+                                        ->heading(__("Description"))
+                                ]),
+                        ])
+                        ->icon(Phosphor::ExportDuotone),
                 ]),
             ]);
     }

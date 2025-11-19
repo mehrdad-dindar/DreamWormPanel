@@ -23,6 +23,7 @@
         "livewire/volt": "^1.7.0",
         "marjose123/filament-lockscreen": "^3.1",
         "mokhosh/filament-jalali": "^5.0",
+        "pxlrbt/filament-excel": "^3.2",
         "spatie/laravel-backup": "^9.3",
         "spatie/laravel-medialibrary": "^11.17",
         "spatie/laravel-permission": "^6.23",
