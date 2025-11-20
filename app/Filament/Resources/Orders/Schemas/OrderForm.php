@@ -55,12 +55,12 @@ class OrderForm
                                                     ->reactive()
                                                     ->live()
                                                     ->native(false)
-                                                    ->helperText(fn ($state) => Product::find($state)->helperText ?? '')
+                                                    ->helperText(fn($state) => Product::find($state)->helperText ?? '')
                                                     ->afterStateUpdated(function ($state, Set $set, Get $get) {
                                                         if (is_null($state)) {
                                                             return null;
                                                         }
-                                                        if (!$get('custom_price')){
+                                                        if (!$get('custom_price')) {
                                                             $product = rescue(fn() => Product::findOrFail($get('product_id')));
                                                             $set('price', $product->price ?? 0 * (float)($get('quantity') ?? 1));
                                                         }
@@ -79,7 +79,7 @@ class OrderForm
                                                         if (is_null($state)) {
                                                             return null;
                                                         }
-                                                        if (!$get('custom_price')){
+                                                        if (!$get('custom_price')) {
                                                             $product = rescue(fn() => Product::findOrFail($get('product_id')));
                                                             $set('price', round(($product->price ?? 0) * (float)($get('quantity') ?? 1)));
                                                         }
@@ -104,7 +104,7 @@ class OrderForm
                                                             ->hidden(fn(Get $get) => !$get('custom_price'))
                                                             ->translateLabel()
                                                             ->icon(Phosphor::XDuotone)
-                                                            ->action(function (Set $set,Get $get) {
+                                                            ->action(function (Set $set, Get $get) {
                                                                 $product = rescue(fn() => Product::findOrFail($get('product_id')));
                                                                 $set('custom_price', 0);
                                                                 $set('price', $product->price ?? 0 * (float)($get('quantity') ?? 1));
@@ -112,11 +112,13 @@ class OrderForm
                                                     ])
                                                     ->suffix('تومان')
                                                     ->reactive()
-                                                    ->live()
+                                                    ->live(onBlur: true)
                                                     ->readOnly(fn(Get $get) => !$get('custom_price'))
-                                                    ->mutateStateForValidationUsing(fn ($state) => str_replace(',', '', $state))
-                                                    ->mutateDehydratedStateUsing(fn ($state) => str_replace(',', '', $state))
                                                     ->mask(RawJs::make('$money($input)'))
+                                                    ->suffix('تومان')
+                                                    ->mutateStateForValidationUsing(fn($state) => (int)str_replace(',', '', $state))
+                                                    ->mutateDehydratedStateUsing(fn($state) => (int)str_replace(',', '', $state))
+                                                    ->numeric()
                                                     ->label(__('Unit Price')),
                                             ])->columns(3)
                                     ])
@@ -151,7 +153,7 @@ class OrderForm
                                                             ->prefixIcon(Phosphor::PhoneDuotone)
                                                             ->live()
                                                             ->reactive()
-                                                            ->unique(table: "users",column: "phone", ignoreRecord: true)
+                                                            ->unique(table: "users", column: "phone", ignoreRecord: true)
                                                             ->rules([
                                                                 'regex:/^0[1-9][0-9]\d{8}$/',
                                                             ])
@@ -177,7 +179,7 @@ class OrderForm
                                                 }
 
                                             })
-                                            ->createOptionAction(fn ($action) => $action->modalWidth('sm'))
+                                            ->createOptionAction(fn($action) => $action->modalWidth('sm'))
                                             ->required(),
                                         Fieldset::make('Deliver type')
                                             ->translateLabel()
@@ -196,7 +198,7 @@ class OrderForm
                                                     ->translateLabel()
                                                     ->columnSpanFull()
                                                     ->dehydrated()
-                                                    ->hidden(fn(Get  $get) => $get('deliver_type')),
+                                                    ->hidden(fn(Get $get) => $get('deliver_type')),
                                             ])
                                     ]),
                                 Hidden::make('price'),
@@ -234,34 +236,37 @@ class OrderForm
         $total = 0;
 
         foreach ($get("items") as $item) {
-            if (is_null($item["product_id"]) || empty($item["quantity"])){
+            if (is_null($item["product_id"]) || empty($item["quantity"])) {
                 continue;
             }
             $price = str_replace(',', '', $item['price']);
+            if (blank($price)) {
+                continue;
+            }
             $total += (int)$price;
             $html .= "<div class='flex justify-between items-center'>";
             $product = Product::findOrFail($item["product_id"]);
             if ($item['quantity'] < 1) {
                 $html .= "<span>" . $product?->name . " (" . $item['quantity'] * 1000 . " گرم)</span>";
-            }else {
+            } else {
                 $html .= "<span>" . $product?->name . " (" . $item['quantity'] . " کیلوگرم)</span>";
             }
-            $html .= "<span>".number_format($price)."</span>";
+            $html .= "<span>" . number_format($price) . "</span>";
             $html .= "</div>";
         }
 
-        if (!$get('deliver_type')){
+        if (!$get('deliver_type')) {
             $delivery = 70000;
             $total += $delivery;
             $html .= "<div class='flex justify-between items-center pt-1'>";
             $html .= "<strong>حمل و نقل</strong>";
-            $html .= "<strong>".number_format($delivery)."</strong>";
+            $html .= "<strong>" . number_format($delivery) . "</strong>";
             $html .= "</div>";
         }
 
         $html .= "<div class='flex justify-between items-center pt-2'>";
         $html .= "<strong>جمع کل</strong>";
-        $html .= "<strong>".number_format($total)." تومان</strong>";
+        $html .= "<strong>" . number_format($total) . " تومان</strong>";
         $html .= "</div>";
 
         return [
